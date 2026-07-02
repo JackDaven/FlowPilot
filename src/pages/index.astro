@@ -1,0 +1,93 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const navItems = [
+  { label: "Tools", href: "#features" },
+  { label: "Workflow", href: "#workflow" },
+  { label: "Testimonials", href: "#testimonials" },
+  { label: "FAQ", href: "#faq" }
+];
+
+const logos = ["Notion", "Webflow", "Figma", "Framer", "Linear", "HubSpot"];
+
+const features = [
+  {
+    title: "AI Tool Curation",
+    desc: "Surface the right tools for content, growth, and operations without wasting time on endless browsing."
+  },
+  {
+    title: "Workflow Templates",
+    desc: "Launch repeatable systems for campaigns, research, and execution with ready-to-use structures."
+  },
+  {
+    title: "Creator Ops",
+    desc: "Build a lightweight operating system that helps solo operators and small teams move faster."
+  },
+  {
+    title: "Smart Discovery",
+    desc: "Find modern tools by use case, goal, and stack compatibility across your daily workflows."
+  }
+];
+---
+
+<BaseLayout>
+  <main class="min-h-screen bg-[#F8F7FF] text-black">
+
+    <!-- NAV -->
+    <nav class="flex justify-between items-center px-10 py-6">
+      <div class="font-bold text-xl">FlowPilot</div>
+
+      <div class="flex gap-6 text-sm">
+        {navItems.map(item => (
+          <a href={item.href} class="hover:opacity-60">
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <button class="bg-[#6D5DFC] text-white px-4 py-2 rounded-xl">
+        Get Started
+      </button>
+    </nav>
+
+    <!-- HERO -->
+    <section class="px-10 py-24 text-center">
+      <h1 class="text-5xl font-bold mb-6">
+        Discover smarter tools for modern digital growth.
+      </h1>
+
+      <p class="text-gray-600 max-w-2xl mx-auto mb-8">
+        Curated AI tools, creative systems, and workflow templates designed to help creators, marketers, and builders move faster.
+      </p>
+
+      <div class="flex justify-center gap-4">
+        <button class="bg-[#6D5DFC] text-white px-6 py-3 rounded-xl">
+          Explore Tools
+        </button>
+        <button class="border px-6 py-3 rounded-xl">
+          See How It Works
+        </button>
+      </div>
+    </section>
+
+    <!-- LOGOS -->
+    <section class="px-10 py-16 text-center opacity-60">
+      <div class="flex flex-wrap justify-center gap-8">
+        {logos.map(logo => (
+          <div>{logo}</div>
+        ))}
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 px-10 py-20">
+      {features.map(f => (
+        <div class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition">
+          <h3 class="font-bold mb-2">{f.title}</h3>
+          <p class="text-gray-600 text-sm">{f.desc}</p>
+        </div>
+      ))}
+    </section>
+
+  </main>
+</BaseLayout>
