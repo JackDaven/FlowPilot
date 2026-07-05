@@ -1,0 +1,31 @@
+---
+const faqs = [
+  ["Is FlowPilot free to start?", "Yes. You can start with curated resources and upgrade when your workflow grows."],
+  ["Can I use my own domain?", "FlowPilot is designed to support polished creator systems and branded workflows."],
+  ["How does tracking work?", "The dashboard helps organize discovery, saves, traffic, and performance signals."],
+  ["Can I export my data?", "Your workflow data is structured so it can move with your operating system."],
+  ["What payment methods do you accept?", "Standard SaaS billing options are supported for paid plans."],
+  ["Is there a refund policy?", "Plans are designed to be simple and transparent for creator teams." ]
+];
+---
+
+<section id="faq" class="px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
+  <div class="mx-auto max-w-5xl">
+    <div class="mx-auto mb-12 max-w-3xl text-center">
+      <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">FAQ</p>
+      <h2 class="text-3xl font-extrabold tracking-[-0.055em] text-[#17142A] sm:text-5xl">Frequently asked questions</h2>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      {faqs.map(([question, answer]) => (
+        <details class="group rounded-2xl border border-[#E8E5F8] bg-white p-5 shadow-[0_14px_40px_rgba(79,65,130,0.06)]">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-extrabold text-[#17142A]">
+            {question}
+            <span class="text-lg text-[#8B7CFF] transition group-open:rotate-45">+</span>
+          </summary>
+          <p class="mt-4 text-sm leading-6 text-[#756F86]">{answer}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

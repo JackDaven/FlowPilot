@@ -1,0 +1,29 @@
+---
+const navItems = [
+  { label: "Tools", href: "#features" },
+  { label: "Workflow", href: "#workflow" },
+  { label: "Testimonials", href: "#testimonials" },
+  { label: "FAQ", href: "#faq" }
+];
+---
+
+<nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8 lg:px-10">
+  <a href="#" class="group flex items-center gap-3">
+    <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#E7E4FF] bg-white shadow-[0_10px_30px_rgba(109,93,252,0.12)]">
+      <span class="h-3.5 w-3.5 rounded-full bg-gradient-to-br from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7]"></span>
+    </span>
+    <span class="text-[15px] font-bold tracking-[-0.03em] text-[#17142A]">FlowPilot</span>
+  </a>
+
+  <div class="hidden items-center gap-1 rounded-full border border-[#E8E5F8] bg-white/82 p-1 text-sm font-medium text-[#6F6A82] shadow-[0_12px_40px_rgba(56,44,92,0.06)] backdrop-blur-xl md:flex">
+    {navItems.map(item => (
+      <a href={item.href} class="rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]">
+        {item.label}
+      </a>
+    ))}
+  </div>
+
+  <button class="rounded-full bg-[#151326] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(21,19,38,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6D5DFC]">
+    Get Started
+  </button>
+</nav>
