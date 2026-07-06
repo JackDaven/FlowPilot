@@ -1,9 +1,8 @@
 import { serve } from "@hono/node-server";
 import app from "./app";
 
-serve({
-  fetch: app.fetch,
-  port: 3001,
-});
+const port = Number(process.env.PORT ?? 8787);
 
-console.log("FlowPilot API running at http://localhost:3001/api");
+serve({ fetch: app.fetch, port }, (info) => {
+  console.log(`FlowPilot API listening on http://localhost:${info.port}/api`);
+});

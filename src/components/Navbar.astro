@@ -1,9 +1,18 @@
 ---
 const navItems = [
-  { label: "Tools", href: "#features" },
+  { label: "Tools", href: "/tools" },
   { label: "Workflow", href: "#workflow" },
-  { label: "Testimonials", href: "#testimonials" },
+  { label: "News Navigation", externalUrl: "http://localhost:4322" },
   { label: "FAQ", href: "#faq" }
+];
+
+const toolLinks = [
+  { label: "MD5", href: "/tools#md5" },
+  { label: "Base64", href: "/tools#base64" },
+  { label: "AES", href: "/tools#aes" },
+  { label: "Morse", href: "/tools#morse" },
+  { label: "URL Encode", href: "/tools#url-encode" },
+  { label: "JS Tools", href: "/tools#js-tools" }
 ];
 ---
 
@@ -16,14 +25,128 @@ const navItems = [
   </a>
 
   <div class="hidden items-center gap-1 rounded-full border border-[#E8E5F8] bg-white/82 p-1 text-sm font-medium text-[#6F6A82] shadow-[0_12px_40px_rgba(56,44,92,0.06)] backdrop-blur-xl md:flex">
-    {navItems.map(item => (
+    {navItems.map(item => item.href ? (
       <a href={item.href} class="rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]">
         {item.label}
       </a>
+    ) : (
+      <button
+        type="button"
+        data-external-url={item.externalUrl}
+        class="nav-external-link rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]"
+      >
+        {item.label}
+      </button>
     ))}
+    <button
+      type="button"
+      data-external-url="http://localhost:4323"
+      class="nav-external-link rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]"
+    >
+      AI Tools
+    </button>
   </div>
 
-  <button class="rounded-full bg-[#151326] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(21,19,38,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6D5DFC]">
-    Get Started
-  </button>
+  <div class="flex items-center gap-3">
+    <button class="hidden rounded-full bg-[#151326] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(21,19,38,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6D5DFC] md:inline-flex">
+      Get Started
+    </button>
+
+    <button
+      type="button"
+      class="mobile-menu-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#E8E5F8] bg-white/90 text-2xl leading-none text-[#6D5DFC] shadow-[0_12px_30px_rgba(109,93,252,0.14)] transition hover:bg-[#F1EEFF] md:hidden"
+      aria-label="Open mobile menu"
+      aria-expanded="false"
+      aria-controls="mobile-drawer"
+    >
+      ☰
+    </button>
+  </div>
 </nav>
+
+<div
+  id="mobile-drawer-overlay"
+  class="pointer-events-none fixed inset-0 z-40 bg-[#151326]/45 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out md:hidden"
+  aria-hidden="true"
+></div>
+
+<aside
+  id="mobile-drawer"
+  class="fixed right-0 top-0 z-50 h-screen w-4/5 max-w-sm translate-x-full border-l border-[#E8E5F8] bg-white/95 shadow-[-24px_0_60px_rgba(56,44,92,0.18)] backdrop-blur-xl transition-transform duration-300 ease-out md:hidden"
+  aria-hidden="true"
+>
+  <div class="flex h-full flex-col px-6 py-6">
+    <div class="flex items-center justify-between border-b border-[#E8E5F8] pb-5">
+      <div class="flex items-center gap-3">
+        <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#E7E4FF] bg-white shadow-[0_10px_30px_rgba(109,93,252,0.12)]">
+          <span class="h-3.5 w-3.5 rounded-full bg-gradient-to-br from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7]"></span>
+        </span>
+        <span class="text-[15px] font-bold tracking-[-0.03em] text-[#17142A]">FlowPilot Tools</span>
+      </div>
+
+      <button
+        type="button"
+        class="mobile-menu-close inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EEFF] text-2xl leading-none text-[#6D5DFC] transition hover:bg-[#E7E4FF]"
+        aria-label="Close mobile menu"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+
+    <div class="mt-7">
+      <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#8A84A3]">Tools</p>
+      <div class="mt-4 grid gap-3">
+        {toolLinks.map(item => (
+          <a
+            href={item.href}
+            class="mobile-drawer-link rounded-2xl border border-[#E8E5F8] bg-gradient-to-r from-white to-[#F7F4FF] px-4 py-3 text-sm font-semibold text-[#332F4F] shadow-[0_12px_28px_rgba(109,93,252,0.08)] transition hover:-translate-y-0.5 hover:border-[#CFC7FF] hover:text-[#6D5DFC]"
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  const toggleButton = document.querySelector(".mobile-menu-toggle");
+  const closeButton = document.querySelector(".mobile-menu-close");
+  const drawer = document.querySelector("#mobile-drawer");
+  const overlay = document.querySelector("#mobile-drawer-overlay");
+  const drawerLinks = document.querySelectorAll(".mobile-drawer-link");
+  const externalLinks = document.querySelectorAll<HTMLButtonElement>(".nav-external-link");
+
+  const setDrawerOpen = (isOpen: boolean) => {
+    drawer?.classList.toggle("translate-x-full", !isOpen);
+    drawer?.classList.toggle("translate-x-0", isOpen);
+    drawer?.setAttribute("aria-hidden", String(!isOpen));
+
+    overlay?.classList.toggle("pointer-events-none", !isOpen);
+    overlay?.classList.toggle("opacity-0", !isOpen);
+    overlay?.classList.toggle("opacity-100", isOpen);
+
+    toggleButton?.setAttribute("aria-expanded", String(isOpen));
+    if (toggleButton) {
+      toggleButton.textContent = isOpen ? "×" : "☰";
+      toggleButton.setAttribute("aria-label", isOpen ? "Close mobile menu" : "Open mobile menu");
+    }
+  };
+
+  toggleButton?.addEventListener("click", () => {
+    const isOpen = toggleButton.getAttribute("aria-expanded") === "true";
+    setDrawerOpen(!isOpen);
+  });
+
+  closeButton?.addEventListener("click", () => setDrawerOpen(false));
+  overlay?.addEventListener("click", () => setDrawerOpen(false));
+  drawerLinks.forEach(link => link.addEventListener("click", () => setDrawerOpen(false)));
+  externalLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      const url = link.dataset.externalUrl;
+      if (url) {
+        window.location.href = url;
+      }
+    });
+  });
+</script>

@@ -5,6 +5,7 @@ import { rateLimit } from "./middleware/rate-limit";
 import { cosmosRoutes } from "./routes/cosmos";
 import { healthRoutes } from "./routes/health";
 import { moduleRoutes } from "./routes/modules";
+import { appsRoutes } from "./routes/apps";
 import { stubRoutes } from "./routes/stubs";
 import type { AppEnv } from "./types";
 
@@ -26,6 +27,7 @@ app.get("/", (c) => {
 
 app.route("/health", healthRoutes);
 app.route("/modules", moduleRoutes);
+app.route("/routes", appsRoutes);
 app.route("/cosmos", cosmosRoutes);
 app.route("/", stubRoutes);
 
