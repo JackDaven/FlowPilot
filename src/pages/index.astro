@@ -8,9 +8,21 @@ import Steps from "../components/Steps.astro";
 import FAQ from "../components/FAQ.astro";
 import Footer from "../components/Footer.astro";
 import ToolsPanel from "../components/ToolsPanel.astro";
+import { absoluteUrl, siteConfig } from "../config/site";
+
+const title = "FlowPilot - Free Online Tools for Creators and Developers";
+const description =
+  "FlowPilot provides free browser-based tools for hashing, encoding, encryption, JSON formatting, URL conversion, and creator workflows.";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteConfig.name,
+  url: absoluteUrl("/"),
+  description: siteConfig.description
+};
 ---
 
-<BaseLayout>
+<BaseLayout title={title} description={description} canonicalPath="/" jsonLd={jsonLd}>
   <main class="relative min-h-screen overflow-hidden bg-[#F7F7FF] text-[#151326]">
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div class="absolute left-1/2 top-[-24rem] h-[52rem] w-[72rem] -translate-x-1/2 rounded-full bg-[#8B7CFF]/20 blur-3xl"></div>

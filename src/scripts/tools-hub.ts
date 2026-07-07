@@ -1,22 +1,61 @@
 import { decryptAesGcm, encryptAesGcm } from "../../lib/tools/aes";
 import { decodeBase64, encodeBase64 } from "../../lib/tools/base64";
 import { copyText, downloadText } from "../../lib/tools/browser-action";
+import {
+  binaryToText,
+  compareHashes,
+  convertCase,
+  convertTimestamp,
+  countCharacters,
+  countWords,
+  createSlug,
+  decodeHtmlEntities,
+  decodeUnicodeEscapes,
+  digestText,
+  encodeHtmlEntities,
+  encodeUnicodeEscapes,
+  generateUuid,
+  hexToText,
+  jsonToYaml,
+  removeDuplicateLines,
+  sortLines,
+  testRegex,
+  textToBinary,
+  textToHex,
+  validateJson,
+  yamlToJson
+} from "../../lib/tools/extended";
 import { formatJson } from "../../lib/tools/js-tools";
 import { md5Hash } from "../../lib/tools/md5";
 import { decodeMorse, encodeMorse } from "../../lib/tools/morse";
-import { defaultToolId, toolsById, type ToolDefinition } from "../../lib/tools/registry";
+import { defaultToolId, type ToolDefinition } from "../../lib/tools/registry";
 import { decodeUrlComponent, encodeUrlComponent } from "../../lib/tools/url-encode";
 
 type OutputState = { label: string; value: string };
+type InitToolsHubOptions = {
+  initialToolId?: string;
+  hashMode?: boolean;
+};
+type ActionKind = "primary" | "secondary";
+
+const legacyToolIds: Record<string, string> = {
+  "js-tools": "json-tools"
+};
 
 const toolPath = (id: string) => `/tools#${id}`;
 
-const parseHashId = () => {
-  const hash = location.hash.replace(/^#/, "");
-  return hash && toolsById[hash] ? hash : defaultToolId;
+const normalizeToolId = (id: string | undefined, byId: Record<string, ToolDefinition>) => {
+  if (!id) return defaultToolId;
+  const normalized = legacyToolIds[id] ?? id;
+  return byId[normalized] ? normalized : defaultToolId;
 };
 
-export const initToolsHub = (registry: ToolDefinition[]) => {
+const parseHashId = (byId: Record<string, ToolDefinition>) => {
+  const hash = location.hash.replace(/^#/, "");
+  return normalizeToolId(hash, byId);
+};
+
+export const initToolsHub = (registry: ToolDefinition[], options: InitToolsHubOptions = {}) => {
   const byId = Object.fromEntries(registry.map((tool) => [tool.id, tool]));
   const tabs = document.querySelectorAll<HTMLAnchorElement>("[data-tool-tab]");
   const sidebarLinks = document.querySelectorAll<HTMLAnchorElement>("[data-tool-sidebar]");
@@ -25,29 +64,34 @@ export const initToolsHub = (registry: ToolDefinition[]) => {
   const statusEl = document.querySelector("[data-tool-status]");
   const introEl = document.querySelector("[data-tool-intro]");
   const guideEl = document.querySelector("[data-tool-guide]");
+  const exampleInputEl = document.querySelector("[data-tool-example-input]");
+  const exampleOutputEl = document.querySelector("[data-tool-example-output]");
   const activeLabel = document.querySelector("[data-active-tool-label]");
   const inputEl = document.querySelector<HTMLTextAreaElement>("[data-tool-input]");
   const outputEl = document.querySelector("[data-tool-output]");
   const outputState = document.querySelector("[data-output-state]");
   const passphraseWrap = document.querySelector<HTMLElement>("[data-tool-passphrase-wrap]");
   const passphraseEl = document.querySelector<HTMLInputElement>("[data-tool-passphrase]");
-  const encryptButton = document.querySelector("[data-tool-encrypt]");
-  const decryptButton = document.querySelector("[data-tool-decrypt]");
+  const primaryButton = document.querySelector<HTMLButtonElement>("[data-tool-encrypt]");
+  const secondaryButton = document.querySelector<HTMLButtonElement>("[data-tool-decrypt]");
   const clearButton = document.querySelector("[data-tool-clear]");
 
-  let activeToolId = defaultToolId;
+  const hashMode = options.hashMode ?? true;
+  let activeToolId = normalizeToolId(options.initialToolId, byId);
+
+  const activeTool = () => byId[activeToolId] || byId[defaultToolId];
 
   const setOutput = ({ label, value }: OutputState) => {
     if (outputState) outputState.textContent = label;
-    if (outputEl) outputEl.textContent = value || "输出结果将在这里展示";
+    if (outputEl) outputEl.textContent = value || "Output will appear here";
   };
 
   const setActiveTool = (id: string) => {
-    const tool = byId[id] || byId[defaultToolId];
+    const tool = byId[normalizeToolId(id, byId)] || byId[defaultToolId];
     activeToolId = tool.id;
 
     const nextUrl = toolPath(tool.id);
-    if (`${location.pathname}${location.hash}` !== nextUrl) {
+    if (hashMode && `${location.pathname}${location.hash}` !== nextUrl) {
       history.replaceState(null, "", nextUrl);
     }
 
@@ -61,7 +105,15 @@ export const initToolsHub = (registry: ToolDefinition[]) => {
     }
     if (introEl) introEl.textContent = tool.intro;
     if (guideEl) guideEl.textContent = tool.guide;
+    if (exampleInputEl) exampleInputEl.textContent = tool.example.input;
+    if (exampleOutputEl) exampleOutputEl.textContent = tool.example.output;
     if (activeLabel) activeLabel.textContent = tool.label;
+    if (inputEl) inputEl.placeholder = tool.placeholder ?? "Enter text to process";
+    if (primaryButton) primaryButton.textContent = tool.actions.primary;
+    if (secondaryButton) {
+      secondaryButton.textContent = tool.actions.secondary ?? "";
+      secondaryButton.classList.toggle("hidden", !tool.actions.secondary);
+    }
     if (passphraseWrap) passphraseWrap.classList.toggle("hidden", tool.id !== "aes");
 
     const markActive = (el: Element, isActive: boolean) => {
@@ -75,91 +127,109 @@ export const initToolsHub = (registry: ToolDefinition[]) => {
     tabs.forEach((tab) => markActive(tab, tab.dataset.toolTab === tool.id));
     sidebarLinks.forEach((link) => markActive(link, link.dataset.toolSidebar === tool.id));
 
-    setOutput({ label: "Ready", value: "输出结果将在这里展示" });
+    setOutput({ label: "Ready", value: "Output will appear here" });
   };
 
   const navigateToTool = (id: string, push = true) => {
-    const nextUrl = toolPath(id);
+    if (!hashMode) return;
+    const nextUrl = toolPath(normalizeToolId(id, byId));
     if (push) history.pushState(null, "", nextUrl);
     setActiveTool(id);
   };
 
-  const runEncrypt = async () => {
+  const runTool = async (kind: ActionKind) => {
+    const tool = activeTool();
     const value = inputEl?.value ?? "";
-    if (!value.trim()) return setOutput({ label: "Empty", value: "请输入需要处理的内容" });
+    if (tool.requiresInput !== false && !value.trim()) {
+      return setOutput({ label: "Empty", value: "Enter text to process first." });
+    }
 
     try {
-      switch (activeToolId) {
+      switch (tool.id) {
         case "md5":
           return setOutput({ label: "MD5", value: md5Hash(value) });
+        case "sha1":
+          return setOutput({ label: "SHA-1", value: await digestText("SHA-1", value) });
+        case "sha256":
+          return setOutput({ label: "SHA-256", value: await digestText("SHA-256", value) });
+        case "sha512":
+          return setOutput({ label: "SHA-512", value: await digestText("SHA-512", value) });
+        case "hash-compare":
+          return setOutput({ label: "Compare", value: compareHashes(value) });
         case "base64":
-          return setOutput({ label: "Base64", value: encodeBase64(value) });
+          return setOutput(kind === "secondary" ? { label: "Decoded", value: decodeBase64(value) } : { label: "Base64", value: encodeBase64(value) });
+        case "html-entity":
+          return setOutput(kind === "secondary" ? { label: "Decoded", value: decodeHtmlEntities(value) } : { label: "Encoded", value: encodeHtmlEntities(value) });
+        case "unicode-converter":
+          return setOutput(kind === "secondary" ? { label: "Decoded", value: decodeUnicodeEscapes(value) } : { label: "Encoded", value: encodeUnicodeEscapes(value) });
+        case "hex-text":
+          return setOutput(kind === "secondary" ? { label: "Decoded", value: hexToText(value) } : { label: "Hex", value: textToHex(value) });
+        case "text-binary":
+          return setOutput(kind === "secondary" ? { label: "Decoded", value: binaryToText(value) } : { label: "Binary", value: textToBinary(value) });
         case "aes": {
           const passphrase = passphraseEl?.value?.trim();
-          if (!passphrase) return setOutput({ label: "Missing key", value: "请输入 AES 密钥。" });
-          return setOutput({ label: "AES", value: await encryptAesGcm(value, passphrase) });
+          if (!passphrase) return setOutput({ label: "Missing key", value: "Enter an AES passphrase first." });
+          return setOutput(
+            kind === "secondary"
+              ? { label: "Decrypted", value: await decryptAesGcm(value, passphrase) }
+              : { label: "AES", value: await encryptAesGcm(value, passphrase) }
+          );
         }
         case "morse":
-          return setOutput({ label: "Morse", value: encodeMorse(value) });
+          return setOutput(kind === "secondary" ? { label: "Decoded", value: decodeMorse(value) } : { label: "Morse", value: encodeMorse(value) });
         case "url-encode":
-          return setOutput({ label: "Encoded", value: encodeUrlComponent(value) });
-        case "js-tools":
-          return setOutput({ label: "Formatted", value: formatJson(value) });
+          return setOutput(kind === "secondary" ? { label: "Decoded", value: decodeUrlComponent(value) } : { label: "Encoded", value: encodeUrlComponent(value) });
+        case "json-tools":
+          return setOutput(kind === "secondary" ? { label: "Minified", value: JSON.stringify(JSON.parse(value)) } : { label: "Formatted", value: formatJson(value) });
+        case "json-validator":
+          return setOutput({ label: "Valid", value: validateJson(value) });
+        case "json-yaml":
+          return setOutput({ label: "YAML", value: jsonToYaml(value) });
+        case "yaml-json":
+          return setOutput({ label: "JSON", value: yamlToJson(value) });
+        case "uuid-generator":
+          return setOutput({ label: "UUID", value: generateUuid() });
+        case "timestamp-converter":
+          return setOutput({ label: "Timestamp", value: convertTimestamp(value) });
+        case "regex-tester":
+          return setOutput({ label: "Matches", value: testRegex(value) });
+        case "word-counter":
+          return setOutput({ label: "Count", value: countWords(value) });
+        case "character-counter":
+          return setOutput({ label: "Count", value: countCharacters(value) });
+        case "slug-generator":
+          return setOutput({ label: "Slug", value: createSlug(value) });
+        case "case-converter":
+          return setOutput({ label: "Cases", value: convertCase(value) });
+        case "remove-duplicate-lines":
+          return setOutput({ label: "Processed", value: removeDuplicateLines(value) });
+        case "sort-lines":
+          return setOutput({ label: "Sorted", value: sortLines(value) });
         case "browser-action": {
+          if (kind === "secondary") {
+            const saved = downloadText(value, "flowpilot-export.txt");
+            return setOutput({
+              label: saved ? "Downloaded" : "Failed",
+              value: saved ? "Input text has been downloaded." : "Download failed. Enter text and try again."
+            });
+          }
           const copied = await copyText(value);
           return setOutput({
             label: copied ? "Copied" : "Failed",
-            value: copied ? "输入内容已复制到剪贴板。" : "复制失败，请检查浏览器权限。"
+            value: copied ? "Input text has been copied to the clipboard." : "Copy failed. Check your browser permission."
           });
         }
         default:
-          return setOutput({ label: "Dev", value: `${byId[activeToolId].name} is currently in development.` });
+          return setOutput({ label: "Dev", value: `${tool.name} is currently in development.` });
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "处理失败，请检查输入。";
-      setOutput({ label: "Error", value: message });
-    }
-  };
-
-  const runDecrypt = async () => {
-    const value = inputEl?.value ?? "";
-    if (!value.trim()) return setOutput({ label: "Empty", value: "请输入需要处理的内容" });
-
-    try {
-      switch (activeToolId) {
-        case "base64":
-          return setOutput({ label: "Decoded", value: decodeBase64(value) });
-        case "md5":
-          return setOutput({ label: "Unavailable", value: "MD5 is a one-way hash and cannot be decrypted." });
-        case "aes": {
-          const passphrase = passphraseEl?.value?.trim();
-          if (!passphrase) return setOutput({ label: "Missing key", value: "请输入 AES 密钥。" });
-          return setOutput({ label: "Decrypted", value: await decryptAesGcm(value, passphrase) });
-        }
-        case "morse":
-          return setOutput({ label: "Decoded", value: decodeMorse(value) });
-        case "url-encode":
-          return setOutput({ label: "Decoded", value: decodeUrlComponent(value) });
-        case "js-tools":
-          return setOutput({ label: "Minified", value: JSON.stringify(JSON.parse(value)) });
-        case "browser-action": {
-          const saved = downloadText(value, "flowpilot-export.txt");
-          return setOutput({
-            label: saved ? "Downloaded" : "Failed",
-            value: saved ? "输入内容已触发下载。" : "下载失败，请输入内容后重试。"
-          });
-        }
-        default:
-          return setOutput({ label: "Dev", value: `${byId[activeToolId].name} is currently in development.` });
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "处理失败，请检查输入。";
+      const message = error instanceof Error ? error.message : "Processing failed. Check the input and try again.";
       setOutput({ label: "Error", value: message });
     }
   };
 
   const onToolLinkClick = (event: Event, id: string | undefined) => {
-    if (!id) return;
+    if (!id || !hashMode) return;
     event.preventDefault();
     navigateToTool(id);
   };
@@ -171,27 +241,18 @@ export const initToolsHub = (registry: ToolDefinition[]) => {
     link.addEventListener("click", (event) => onToolLinkClick(event, link.dataset.toolSidebar));
   });
 
-  window.addEventListener("hashchange", () => setActiveTool(parseHashId()));
-  window.addEventListener("popstate", () => setActiveTool(parseHashId()));
+  if (hashMode) {
+    window.addEventListener("hashchange", () => setActiveTool(parseHashId(byId)));
+    window.addEventListener("popstate", () => setActiveTool(parseHashId(byId)));
+  }
 
-  encryptButton?.addEventListener("click", () => void runEncrypt());
-  decryptButton?.addEventListener("click", () => void runDecrypt());
+  primaryButton?.addEventListener("click", () => void runTool("primary"));
+  secondaryButton?.addEventListener("click", () => void runTool("secondary"));
   clearButton?.addEventListener("click", () => {
     if (inputEl) inputEl.value = "";
     if (passphraseEl) passphraseEl.value = "";
-    setOutput({ label: "Ready", value: "输出结果将在这里展示" });
+    setOutput({ label: "Ready", value: "Output will appear here" });
   });
 
-  const toggle = document.querySelector("[data-more-toggle]");
-  const menu = document.querySelector("[data-more-menu]");
-  toggle?.addEventListener("click", () => {
-    const isOpen = menu?.classList.contains("opacity-100");
-    menu?.classList.toggle("pointer-events-none", isOpen);
-    menu?.classList.toggle("opacity-0", isOpen);
-    menu?.classList.toggle("translate-y-2", isOpen);
-    menu?.classList.toggle("opacity-100", !isOpen);
-    menu?.classList.toggle("translate-y-0", !isOpen);
-  });
-
-  setActiveTool(parseHashId());
+  setActiveTool(hashMode ? parseHashId(byId) : activeToolId);
 };

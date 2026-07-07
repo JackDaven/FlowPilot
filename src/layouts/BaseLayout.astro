@@ -1,12 +1,48 @@
 ---
 import "../styles/global.css";
+import Analytics from "../components/Analytics.astro";
+import { absoluteUrl, siteConfig } from "../config/site";
+
+type Props = {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+};
+
+const {
+  title = siteConfig.defaultTitle,
+  description = siteConfig.defaultDescription,
+  canonicalPath = Astro.url.pathname,
+  ogType = "website",
+  jsonLd
+} = Astro.props;
+
+const normalizedPath = canonicalPath.startsWith("/") ? canonicalPath : `/${canonicalPath}`;
+const canonicalUrl = absoluteUrl(normalizedPath);
+const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 ---
 
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>FlowPilot</title>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    {jsonLdItems.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
+    <Analytics />
   </head>
 
   <body class="bg-[#F8F7FF] text-black">

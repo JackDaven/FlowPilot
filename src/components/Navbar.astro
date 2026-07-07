@@ -1,23 +1,21 @@
 ---
+import { getCategoryPath, getToolPath, toolCategories, toolsById } from "../../lib/tools/registry";
+
 const navItems = [
   { label: "Tools", href: "/tools" },
-  { label: "Workflow", href: "#workflow" },
-  { label: "News Navigation", externalUrl: "http://localhost:4322" },
-  { label: "FAQ", href: "#faq" }
+  { label: "Workflow", href: "/#workflow" },
+  { label: "FAQ", href: "/#faq" }
 ];
 
-const toolLinks = [
-  { label: "MD5", href: "/tools#md5" },
-  { label: "Base64", href: "/tools#base64" },
-  { label: "AES", href: "/tools#aes" },
-  { label: "Morse", href: "/tools#morse" },
-  { label: "URL Encode", href: "/tools#url-encode" },
-  { label: "JS Tools", href: "/tools#js-tools" }
-];
+const toolLinks = ["md5", "sha256", "base64", "json-tools", "word-counter", "slug-generator"].map((id) => {
+  const tool = toolsById[id];
+  return { label: tool.label === "JSON" ? "JSON Formatter" : tool.name, href: getToolPath(tool) };
+});
+const categoryLinks = toolCategories.filter((category) => ["hash", "encoding", "developer", "text"].includes(category.slug));
 ---
 
 <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8 lg:px-10">
-  <a href="#" class="group flex items-center gap-3">
+  <a href="/" class="group flex items-center gap-3">
     <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#E7E4FF] bg-white shadow-[0_10px_30px_rgba(109,93,252,0.12)]">
       <span class="h-3.5 w-3.5 rounded-full bg-gradient-to-br from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7]"></span>
     </span>
@@ -25,41 +23,33 @@ const toolLinks = [
   </a>
 
   <div class="hidden items-center gap-1 rounded-full border border-[#E8E5F8] bg-white/82 p-1 text-sm font-medium text-[#6F6A82] shadow-[0_12px_40px_rgba(56,44,92,0.06)] backdrop-blur-xl md:flex">
-    {navItems.map(item => item.href ? (
+    {navItems.map(item => (
       <a href={item.href} class="rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]">
         {item.label}
       </a>
-    ) : (
-      <button
-        type="button"
-        data-external-url={item.externalUrl}
-        class="nav-external-link rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]"
-      >
-        {item.label}
-      </button>
     ))}
     <button
       type="button"
-      data-external-url="http://localhost:4323"
-      class="nav-external-link rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]"
+      data-tools-open
+      class="rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]"
     >
-      AI Tools
+      Quick Open
     </button>
   </div>
 
   <div class="flex items-center gap-3">
-    <button class="hidden rounded-full bg-[#151326] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(21,19,38,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6D5DFC] md:inline-flex">
-      Get Started
-    </button>
+    <a href="/tools" class="hidden rounded-full bg-[#151326] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(21,19,38,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6D5DFC] md:inline-flex">
+      Browse Tools
+    </a>
 
     <button
       type="button"
-      class="mobile-menu-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#E8E5F8] bg-white/90 text-2xl leading-none text-[#6D5DFC] shadow-[0_12px_30px_rgba(109,93,252,0.14)] transition hover:bg-[#F1EEFF] md:hidden"
+      class="mobile-menu-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#E8E5F8] bg-white/90 text-xl leading-none text-[#6D5DFC] shadow-[0_12px_30px_rgba(109,93,252,0.14)] transition hover:bg-[#F1EEFF] md:hidden"
       aria-label="Open mobile menu"
       aria-expanded="false"
       aria-controls="mobile-drawer"
     >
-      ☰
+      =
     </button>
   </div>
 </nav>
@@ -86,11 +76,25 @@ const toolLinks = [
 
       <button
         type="button"
-        class="mobile-menu-close inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EEFF] text-2xl leading-none text-[#6D5DFC] transition hover:bg-[#E7E4FF]"
+        class="mobile-menu-close inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EEFF] text-xl leading-none text-[#6D5DFC] transition hover:bg-[#E7E4FF]"
         aria-label="Close mobile menu"
       >
-        <span aria-hidden="true">×</span>
+        x
       </button>
+    </div>
+
+    <div class="mt-7">
+      <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#8A84A3]">Categories</p>
+      <div class="mt-4 grid gap-3">
+        {categoryLinks.map(item => (
+          <a
+            href={getCategoryPath(item)}
+            class="mobile-drawer-link rounded-2xl border border-[#E8E5F8] bg-white px-4 py-3 text-sm font-semibold text-[#332F4F] shadow-[0_12px_28px_rgba(109,93,252,0.08)] transition hover:-translate-y-0.5 hover:border-[#CFC7FF] hover:text-[#6D5DFC]"
+          >
+            {item.name}
+          </a>
+        ))}
+      </div>
     </div>
 
     <div class="mt-7">
@@ -115,7 +119,6 @@ const toolLinks = [
   const drawer = document.querySelector("#mobile-drawer");
   const overlay = document.querySelector("#mobile-drawer-overlay");
   const drawerLinks = document.querySelectorAll(".mobile-drawer-link");
-  const externalLinks = document.querySelectorAll<HTMLButtonElement>(".nav-external-link");
 
   const setDrawerOpen = (isOpen: boolean) => {
     drawer?.classList.toggle("translate-x-full", !isOpen);
@@ -128,7 +131,7 @@ const toolLinks = [
 
     toggleButton?.setAttribute("aria-expanded", String(isOpen));
     if (toggleButton) {
-      toggleButton.textContent = isOpen ? "×" : "☰";
+      toggleButton.textContent = isOpen ? "x" : "=";
       toggleButton.setAttribute("aria-label", isOpen ? "Close mobile menu" : "Open mobile menu");
     }
   };
@@ -141,12 +144,4 @@ const toolLinks = [
   closeButton?.addEventListener("click", () => setDrawerOpen(false));
   overlay?.addEventListener("click", () => setDrawerOpen(false));
   drawerLinks.forEach(link => link.addEventListener("click", () => setDrawerOpen(false)));
-  externalLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      const url = link.dataset.externalUrl;
-      if (url) {
-        window.location.href = url;
-      }
-    });
-  });
 </script>

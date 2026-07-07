@@ -1,43 +1,53 @@
 ---
-const logos = ["Notion", "Webflow", "Figma", "Framer", "Linear", "HubSpot"];
+import { getCategoryPath, toolsById, getToolPath, toolCategories } from "../../lib/tools/registry";
+
+const primaryTools = ["md5", "sha256", "base64", "aes", "json-tools", "json-validator", "word-counter", "slug-generator"]
+  .map((id) => toolsById[id])
+  .filter(Boolean);
+const primaryCategories = toolCategories.filter((category) => ["hash", "encoding", "developer", "text"].includes(category.slug));
 ---
 
 <section class="relative px-5 pb-32 pt-20 sm:px-8 lg:px-10 lg:pb-44 lg:pt-28">
   <div class="mx-auto max-w-5xl text-center">
     <div class="mb-7 inline-flex items-center gap-2 rounded-full border border-[#E7E4FF] bg-white/80 px-3.5 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#6D5DFC] shadow-[0_14px_40px_rgba(109,93,252,0.08)] backdrop-blur-xl">
       <span class="h-1.5 w-1.5 rounded-full bg-[#A855F7] shadow-[0_0_18px_rgba(168,85,247,0.55)]"></span>
-      Curated for modern creators
+      Free browser-based utilities
     </div>
 
     <h1 class="mx-auto max-w-5xl text-5xl font-extrabold leading-[0.96] tracking-[-0.065em] text-[#141225] sm:text-6xl lg:text-7xl xl:text-[5.7rem]">
-      Discover smarter <span class="bg-gradient-to-r from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7] bg-clip-text text-transparent">tools for modern creators.</span>
+      Free Online Tools for <span class="bg-gradient-to-r from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7] bg-clip-text text-transparent">Creators, Developers, and Marketers</span>
     </h1>
 
     <p class="mx-auto mt-7 max-w-2xl text-lg leading-8 text-[#6F6A82] sm:text-xl">
-      Curated AI tools, visual resources, and productivity systems designed to help creators, marketers, and builders launch cleaner workflows faster.
+      Use fast browser-based utilities for hashing, encoding, encryption, formatting, and everyday workflow tasks. No signup required.
     </p>
 
     <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-      <button type="button" data-tools-open class="rounded-full bg-[#6D5DFC] px-6 py-3.5 text-sm font-bold text-white shadow-[0_18px_50px_rgba(109,93,252,0.32)] transition hover:-translate-y-0.5 hover:bg-[#5B4BEB] focus:outline-none focus:ring-4 focus:ring-[#8B7CFF]/25">
-        Explore Tools
-      </button>
+      <a href="/tools" class="rounded-full bg-[#6D5DFC] px-6 py-3.5 text-sm font-bold text-white shadow-[0_18px_50px_rgba(109,93,252,0.32)] transition hover:-translate-y-0.5 hover:bg-[#5B4BEB] focus:outline-none focus:ring-4 focus:ring-[#8B7CFF]/25">
+        Browse Tools
+      </a>
       <a href="#workflow" data-smooth-scroll class="rounded-full border border-[#E3DFF7] bg-white px-6 py-3.5 text-sm font-bold text-[#201D35] shadow-[0_14px_36px_rgba(56,44,92,0.07)] transition hover:-translate-y-0.5 hover:border-[#CFC8FF] hover:text-[#6D5DFC] focus:outline-none focus:ring-4 focus:ring-[#8B7CFF]/20">
         See How It Works
       </a>
     </div>
 
     <div class="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-[#8A849B]">
-      <span>Free creator access</span>
-      <span>Curated weekly</span>
-      <span>No workflow clutter</span>
+      <span>Free online tools</span>
+      <span>Developer utilities</span>
+      <span>Creator workflows</span>
     </div>
   </div>
 
   <div class="mx-auto mt-20 max-w-7xl border-y border-[#E8E5F8] py-10">
-    <div class="mb-6 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#9A94AD]">Inspired by modern product teams</div>
-    <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-sm font-extrabold text-[#756F86] sm:gap-x-14">
-      {logos.map(logo => (
-        <div class="transition hover:text-[#6D5DFC]">{logo}</div>
+    <div class="mb-6 text-center text-xs font-bold uppercase tracking-[0.24em] text-[#9A94AD]">Popular FlowPilot tools</div>
+    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-4 text-sm font-extrabold text-[#756F86] sm:gap-x-5">
+      {primaryTools.map(tool => (
+        <a href={getToolPath(tool)} class="rounded-full border border-[#E8E5F8] bg-white/78 px-4 py-2 transition hover:border-[#CFC8FF] hover:text-[#6D5DFC]">{tool.name}</a>
+      ))}
+    </div>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-4 text-sm font-extrabold text-[#6D5DFC] sm:gap-x-5">
+      {primaryCategories.map(category => (
+        <a href={getCategoryPath(category)} class="rounded-full bg-[#F1EEFF] px-4 py-2 transition hover:bg-white hover:text-[#5B4BEB]">{category.name}</a>
       ))}
     </div>
   </div>

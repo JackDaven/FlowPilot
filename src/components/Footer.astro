@@ -1,21 +1,34 @@
 ---
-const product = ['Features', 'Pricing', 'Templates', 'Changelog'];
-const resources = ['Documentation', 'API', 'Help center', 'Status'];
-const company = ['About', 'Careers', 'Privacy', 'Terms'];
+import { getCategoryPath, getToolPath, toolCategories, toolsById } from "../../lib/tools/registry";
+
+const primaryTools = [
+  ["MD5 Generator", toolsById.md5],
+  ["SHA-256 Generator", toolsById.sha256],
+  ["Base64 Encoder", toolsById.base64],
+  ["JSON Formatter", toolsById["json-tools"]],
+  ["Word Counter", toolsById["word-counter"]]
+] as const;
+
+const resources = [
+  { label: "Tools Directory", href: "/tools" },
+  ...toolCategories
+    .filter((category) => ["hash", "encoding", "developer", "text"].includes(category.slug))
+    .map((category) => ({ label: category.name, href: getCategoryPath(category) }))
+];
 ---
 
 <footer class="px-5 pb-8 pt-20 sm:px-8 lg:px-10">
   <div class="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[#11101E] text-white shadow-[0_30px_90px_rgba(21,19,38,0.22)]">
     <div class="grid gap-10 border-b border-white/10 p-8 sm:p-10 lg:grid-cols-[1.2fr_1fr] lg:p-12">
       <div>
-        <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#AFA7FF]">Ready to launch?</p>
-        <h2 class="max-w-xl text-3xl font-extrabold tracking-[-0.055em] sm:text-5xl">Start building your creator system today.</h2>
-        <p class="mt-5 max-w-lg text-sm leading-6 text-white/54">Join thousands of creators who use FlowPilot to discover, organize, and scale modern workflows.</p>
+        <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#AFA7FF]">Free online tools</p>
+        <h2 class="max-w-xl text-3xl font-extrabold tracking-[-0.055em] sm:text-5xl">Run quick browser-based utilities without signup.</h2>
+        <p class="mt-5 max-w-lg text-sm leading-6 text-white/54">Hash, encode, encrypt, format, and transform text with FlowPilot tools for creators, developers, and marketers.</p>
       </div>
       <div class="flex items-center lg:justify-end">
-        <button class="rounded-full bg-white px-6 py-3.5 text-sm font-extrabold text-[#151326] shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition hover:-translate-y-0.5 hover:bg-[#F1EEFF]">
-          Get Started Free
-        </button>
+        <a href="/tools" class="rounded-full bg-white px-6 py-3.5 text-sm font-extrabold text-[#151326] shadow-[0_18px_50px_rgba(255,255,255,0.14)] transition hover:-translate-y-0.5 hover:bg-[#F1EEFF]">
+          Browse Tools
+        </a>
       </div>
     </div>
 
@@ -25,21 +38,32 @@ const company = ['About', 'Careers', 'Privacy', 'Terms'];
           <span class="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7]"></span>
           <span class="font-extrabold tracking-[-0.03em]">FlowPilot</span>
         </div>
-        <p class="text-sm text-white/46">© 2026 FlowPilot. All rights reserved.</p>
+        <p class="text-sm text-white/46">Copyright 2026 FlowPilot. All rights reserved.</p>
       </div>
 
-      {[
-        ['Product', product],
-        ['Resources', resources],
-        ['Company', company]
-      ].map(([title, items]) => (
-        <div>
-          <h3 class="mb-4 text-sm font-extrabold text-white/86">{title}</h3>
-          <div class="space-y-3 text-sm text-white/46">
-            {items.map(item => <a href="#" class="block transition hover:text-white">{item}</a>)}
-          </div>
+      <div>
+        <h3 class="mb-4 text-sm font-extrabold text-white/86">Popular Tools</h3>
+        <div class="space-y-3 text-sm text-white/46">
+          {primaryTools.map(([label, tool]) => <a href={getToolPath(tool)} class="block transition hover:text-white">{label}</a>)}
         </div>
-      ))}
+      </div>
+
+      <div>
+        <h3 class="mb-4 text-sm font-extrabold text-white/86">Categories</h3>
+        <div class="space-y-3 text-sm text-white/46">
+          {resources.map(item => <a href={item.href} class="block transition hover:text-white">{item.label}</a>)}
+        </div>
+      </div>
+
+      <div>
+        <h3 class="mb-4 text-sm font-extrabold text-white/86">FlowPilot</h3>
+        <div class="space-y-3 text-sm text-white/46">
+          <a href="/" class="block transition hover:text-white">Home</a>
+          <a href="/about" class="block transition hover:text-white">About</a>
+          <a href="/privacy" class="block transition hover:text-white">Privacy</a>
+          <a href="/#faq" class="block transition hover:text-white">FAQ</a>
+        </div>
+      </div>
     </div>
   </div>
 </footer>

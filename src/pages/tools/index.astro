@@ -1,26 +1,38 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { toolsRegistry } from "../../../lib/tools/registry";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+import ToolWorkspace from "../../components/ToolWorkspace.astro";
+import ToolsPanel from "../../components/ToolsPanel.astro";
+import { getCategoryPath, getToolPath, toolCategories, toolsRegistry } from "../../../lib/tools/registry";
+import { absoluteUrl } from "../../config/site";
 
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "SEO", href: "#seo" },
-  { label: "热门工具", href: "#popular" }
+const title = "Free Online Tools Directory | FlowPilot";
+const description =
+  "Browse free online tools for hashing, encoding, encryption, JSON formatting, URL conversion, and browser-based text utilities.";
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Free Online Tools Directory",
+    url: absoluteUrl("/tools"),
+    description
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: toolsRegistry.map((tool, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: tool.name,
+      url: absoluteUrl(getToolPath(tool))
+    }))
+  }
 ];
-
-const toolLinks = [
-  { label: "MD5", href: "/tools#md5" },
-  { label: "Base64", href: "/tools#base64" },
-  { label: "AES", href: "/tools#aes" },
-  { label: "Morse", href: "/tools#morse" },
-  { label: "URL Encode", href: "/tools#url-encode" },
-  { label: "JS Tools", href: "/tools#js-tools" }
-];
-
-const defaultTool = toolsRegistry[0];
 ---
 
-<BaseLayout>
+<BaseLayout title={title} description={description} canonicalPath="/tools" jsonLd={jsonLd}>
   <main class="relative min-h-screen overflow-hidden bg-[#F7F7FF] text-[#151326]">
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div class="absolute left-1/2 top-[-24rem] h-[52rem] w-[72rem] -translate-x-1/2 rounded-full bg-[#8B7CFF]/20 blur-3xl"></div>
@@ -30,235 +42,87 @@ const defaultTool = toolsRegistry[0];
     </div>
 
     <div class="relative z-10">
-      <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8 lg:px-10">
-        <a href="/" class="group flex items-center gap-3">
-          <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#E7E4FF] bg-white shadow-[0_10px_30px_rgba(109,93,252,0.12)]">
-            <span class="h-3.5 w-3.5 rounded-full bg-gradient-to-br from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7]"></span>
-          </span>
-          <span class="text-[15px] font-bold tracking-[-0.03em] text-[#17142A]">FlowPilot</span>
-        </a>
+      <Navbar />
 
-        <div class="hidden items-center gap-1 rounded-full border border-[#E8E5F8] bg-white/82 p-1 text-sm font-medium text-[#6F6A82] shadow-[0_12px_40px_rgba(56,44,92,0.06)] backdrop-blur-xl md:flex">
-          {navItems.map(item => (
-            <a href={item.href} class="rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]">
-              {item.label}
-            </a>
-          ))}
-          <div class="relative">
-            <button type="button" data-more-toggle class="rounded-full px-4 py-2 transition hover:bg-[#F1EEFF] hover:text-[#6D5DFC]">More</button>
-            <div data-more-menu class="pointer-events-none absolute right-0 top-12 w-44 translate-y-2 rounded-2xl border border-[#E8E5F8] bg-white p-3 opacity-0 shadow-[0_18px_50px_rgba(79,65,130,0.12)] transition duration-200">
-              <p class="rounded-xl bg-[#F7F7FF] px-3 py-2 text-sm text-[#8A849B]">Coming soon</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <a href="/" class="hidden rounded-full bg-[#151326] px-4 py-2 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(21,19,38,0.18)] transition hover:-translate-y-0.5 hover:bg-[#6D5DFC] md:inline-flex">Back Home</a>
-
-          <button
-            type="button"
-            class="mobile-menu-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#E8E5F8] bg-white/90 text-2xl leading-none text-[#6D5DFC] shadow-[0_12px_30px_rgba(109,93,252,0.14)] transition hover:bg-[#F1EEFF] md:hidden"
-            aria-label="Open mobile menu"
-            aria-expanded="false"
-            aria-controls="mobile-drawer"
-          >
-            ☰
-          </button>
-        </div>
-      </nav>
-
-      <div
-        id="mobile-drawer-overlay"
-        class="pointer-events-none fixed inset-0 z-40 bg-[#151326]/45 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out md:hidden"
-        aria-hidden="true"
-      ></div>
-
-      <aside
-        id="mobile-drawer"
-        class="fixed right-0 top-0 z-50 h-screen w-4/5 max-w-sm translate-x-full border-l border-[#E8E5F8] bg-white/95 shadow-[-24px_0_60px_rgba(56,44,92,0.18)] backdrop-blur-xl transition-transform duration-300 ease-out md:hidden"
-        aria-hidden="true"
-      >
-        <div class="flex h-full flex-col px-6 py-6">
-          <div class="flex items-center justify-between border-b border-[#E8E5F8] pb-5">
-            <div class="flex items-center gap-3">
-              <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-[#E7E4FF] bg-white shadow-[0_10px_30px_rgba(109,93,252,0.12)]">
-                <span class="h-3.5 w-3.5 rounded-full bg-gradient-to-br from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7]"></span>
-              </span>
-              <span class="text-[15px] font-bold tracking-[-0.03em] text-[#17142A]">FlowPilot Tools</span>
-            </div>
-
-            <button
-              type="button"
-              class="mobile-menu-close inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EEFF] text-2xl leading-none text-[#6D5DFC] transition hover:bg-[#E7E4FF]"
-              aria-label="Close mobile menu"
-            >
-              ×
-            </button>
-          </div>
-
-          <div class="mt-7">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#8A84A3]">Tools</p>
-            <div class="mt-4 grid gap-3">
-              {toolLinks.map(item => (
-                <a
-                  href={item.href}
-                  class="mobile-drawer-link rounded-2xl border border-[#E8E5F8] bg-gradient-to-r from-white to-[#F7F4FF] px-4 py-3 text-sm font-semibold text-[#332F4F] shadow-[0_12px_28px_rgba(109,93,252,0.08)] transition hover:-translate-y-0.5 hover:border-[#CFC7FF] hover:text-[#6D5DFC]"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <section class="px-5 pb-24 pt-10 sm:px-8 lg:px-10 lg:pb-32">
+      <section class="px-5 pb-16 pt-10 sm:px-8 lg:px-10">
         <div class="mx-auto max-w-7xl">
-          <div class="mb-5 flex items-center gap-2 rounded-2xl border border-[#E8E5F8] bg-white/82 px-4 py-3 text-sm text-[#756F86] shadow-[0_12px_34px_rgba(79,65,130,0.06)] backdrop-blur-xl">
-            <a href="/" class="font-bold text-[#6D5DFC] hover:text-[#5B4BEB]">首页</a>
+          <nav class="mb-5 flex items-center gap-2 rounded-2xl border border-[#E8E5F8] bg-white/82 px-4 py-3 text-sm text-[#756F86] shadow-[0_12px_34px_rgba(79,65,130,0.06)] backdrop-blur-xl" aria-label="Breadcrumb">
+            <a href="/" class="font-bold text-[#6D5DFC] hover:text-[#5B4BEB]">Home</a>
             <span>&gt;</span>
-            <a href="/tools" class="font-bold text-[#6D5DFC] hover:text-[#5B4BEB]">工具站</a>
-            <span>&gt;</span>
-            <span data-breadcrumb-current class="font-bold text-[#17142A]">{defaultTool.name}</span>
-          </div>
+            <span class="font-bold text-[#17142A]">Tools</span>
+          </nav>
 
-          <div class="mb-7 rounded-[2rem] border border-[#E8E5F8] bg-white/86 p-5 shadow-[0_24px_80px_rgba(79,65,130,0.10)] backdrop-blur-xl sm:p-7">
-            <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">Tool Hub</p>
-                <h1 class="text-3xl font-extrabold tracking-[-0.055em] text-[#17142A] sm:text-5xl">站长工具式工作台</h1>
-                <p class="mt-4 max-w-2xl text-sm leading-6 text-[#756F86]">使用顶部标签切换工具，输入内容后在同一页面完成处理。保持 FlowPilot 的紫白 SaaS 视觉，同时采用更清晰的信息工具站结构。</p>
-              </div>
-              <div class="rounded-2xl border border-[#E8E5F8] bg-[#F7F7FF] px-4 py-3 text-sm font-bold text-[#8A849B]">
-                Hash routing enabled
-              </div>
+          <div class="grid gap-8 lg:grid-cols-[1fr_0.42fr] lg:items-end">
+            <div>
+              <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">FlowPilot tools</p>
+              <h1 class="max-w-4xl text-4xl font-extrabold leading-tight tracking-[-0.055em] text-[#17142A] sm:text-6xl">
+                Free Online Tools Directory
+              </h1>
+              <p class="mt-5 max-w-2xl text-base leading-7 text-[#756F86] sm:text-lg">
+                Browse free online tools for hashing, encoding, encryption, JSON formatting, URL conversion, and browser-based text utilities.
+              </p>
             </div>
-
-            <div class="flex flex-wrap gap-2 border-t border-[#E8E5F8] pt-5" role="tablist" aria-label="Tool categories">
-              {toolsRegistry.map(tool => (
-                <a
-                  href={`/tools#${tool.id}`}
-                  data-tool-tab={tool.id}
-                  class="rounded-full border border-[#E8E5F8] bg-white px-4 py-2 text-sm font-extrabold text-[#756F86] transition hover:border-[#CFC8FF] hover:bg-[#F1EEFF] hover:text-[#6D5DFC]"
-                  role="tab"
-                >
-                  {tool.label}
-                </a>
-              ))}
+            <div class="rounded-[2rem] border border-[#E8E5F8] bg-white/86 p-5 text-sm leading-6 text-[#756F86] shadow-[0_18px_50px_rgba(79,65,130,0.08)] backdrop-blur-xl">
+              <p class="font-extrabold text-[#17142A]">Quick tool workbench</p>
+              <p class="mt-2">Open a dedicated tool page for SEO content, or use the embedded workbench below for fast hash-compatible switching.</p>
+              <a href="#quick-workbench" class="mt-4 inline-flex rounded-full bg-[#6D5DFC] px-4 py-2 text-sm font-extrabold text-white shadow-[0_14px_34px_rgba(109,93,252,0.24)] transition hover:-translate-y-0.5 hover:bg-[#5B4BEB]">
+                Open Workbench
+              </a>
             </div>
           </div>
 
-          <div class="grid gap-7 lg:grid-cols-[0.9fr_1.1fr]">
-            <aside class="space-y-7">
-              <div class="rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+          <div class="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {toolCategories.map(category => (
+              <a href={getCategoryPath(category)} class="rounded-[2rem] border border-[#E8E5F8] bg-white/88 p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#CFC8FF] hover:shadow-[0_24px_70px_rgba(109,93,252,0.14)]">
+                <span class="mb-4 inline-flex rounded-full bg-[#F1EEFF] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[#6D5DFC]">{category.tools.length} tools</span>
+                <h2 class="text-xl font-extrabold tracking-[-0.035em] text-[#17142A]">{category.name}</h2>
+                <p class="mt-3 text-sm leading-6 text-[#756F86]">{category.intro}</p>
+              </a>
+            ))}
+          </div>
+
+          <div class="mt-12 space-y-10">
+            {toolCategories.map(group => (
+              <section id={group.slug} class="scroll-mt-24">
                 <div class="mb-4 flex items-center justify-between gap-4">
-                  <h2 data-tool-name class="text-2xl font-extrabold tracking-[-0.045em] text-[#17142A]">{defaultTool.name}</h2>
-                  <span data-tool-status class="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.12em] text-emerald-600">{defaultTool.status}</span>
-                </div>
-                <div class="space-y-5 text-sm leading-7 text-[#756F86]">
                   <div>
-                    <p class="mb-1 font-extrabold text-[#17142A]">工具简介</p>
-                    <p data-tool-intro>{defaultTool.intro}</p>
+                    <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">{group.name}</h2>
+                    <a href={getCategoryPath(group)} class="mt-1 inline-flex text-sm font-extrabold text-[#6D5DFC] transition hover:text-[#5B4BEB]">Open category page</a>
                   </div>
-                  <div>
-                    <p class="mb-1 font-extrabold text-[#17142A]">使用说明</p>
-                    <p data-tool-guide>{defaultTool.guide}</p>
-                  </div>
+                  <span class="rounded-full bg-white/86 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[#8A849B]">{group.tools.length} tools</span>
                 </div>
-              </div>
-
-              <div class="rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
-                <h3 class="mb-4 text-lg font-extrabold tracking-[-0.03em] text-[#17142A]">Tools sidebar</h3>
-                <div class="space-y-2">
-                  {toolsRegistry.map(tool => (
-                    <a
-                      href={`/tools#${tool.id}`}
-                      data-tool-sidebar={tool.id}
-                      class="flex items-center justify-between rounded-2xl border border-[#E8E5F8] bg-[#FBFAFF] px-4 py-3 text-sm transition hover:border-[#CFC8FF] hover:bg-[#F1EEFF]"
-                    >
-                      <span class="font-bold text-[#17142A]">{tool.label}</span>
-                      <span class:list={["rounded-full px-2.5 py-1 text-xs font-extrabold uppercase tracking-[0.1em]", tool.status === "local" ? "bg-emerald-50 text-emerald-600" : "bg-[#F1EEFF] text-[#6D5DFC]"]}>{tool.status}</span>
+                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {group.tools.map(tool => (
+                    <a href={getToolPath(tool)} class="group rounded-[2rem] border border-[#E8E5F8] bg-white/88 p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#CFC8FF] hover:shadow-[0_24px_70px_rgba(109,93,252,0.14)]">
+                      <span class="mb-4 inline-flex rounded-full bg-[#F1EEFF] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[#6D5DFC]">{tool.label}</span>
+                      <h3 class="text-xl font-extrabold tracking-[-0.035em] text-[#17142A] group-hover:text-[#6D5DFC]">{tool.name}</h3>
+                      <p class="mt-3 text-sm leading-6 text-[#756F86]">{tool.intro}</p>
+                      <span class="mt-5 inline-flex text-sm font-extrabold text-[#6D5DFC]">Open tool page</span>
                     </a>
                   ))}
                 </div>
-              </div>
-            </aside>
-
-            <section class="rounded-[2rem] border border-[#E8E5F8] bg-white p-5 shadow-[0_24px_80px_rgba(79,65,130,0.10)] sm:p-6">
-              <div class="grid min-h-[520px] gap-5 lg:grid-cols-2">
-                <div class="flex flex-col">
-                  <div class="mb-3 flex items-center justify-between">
-                    <h3 class="font-extrabold tracking-[-0.03em] text-[#17142A]">Tool Input Area</h3>
-                    <span data-active-tool-label class="rounded-full bg-[#F1EEFF] px-3 py-1 text-xs font-extrabold text-[#6D5DFC]">{defaultTool.label}</span>
-                  </div>
-                  <textarea data-tool-input class="min-h-[330px] flex-1 resize-none rounded-2xl border border-[#E8E5F8] bg-[#FBFAFF] p-4 text-sm leading-6 text-[#17142A] outline-none transition placeholder:text-[#B6B0C7] focus:border-[#8B7CFF] focus:ring-4 focus:ring-[#8B7CFF]/15" placeholder="请输入需要处理的内容"></textarea>
-                  <div data-tool-passphrase-wrap class="mt-4 hidden">
-                    <label class="mb-2 block text-sm font-bold text-[#17142A]">AES Passphrase</label>
-                    <input data-tool-passphrase type="password" class="w-full rounded-2xl border border-[#E8E5F8] bg-[#FBFAFF] px-4 py-3 text-sm text-[#17142A] outline-none transition placeholder:text-[#B6B0C7] focus:border-[#8B7CFF] focus:ring-4 focus:ring-[#8B7CFF]/15" placeholder="输入加密密钥" />
-                  </div>
-                  <div class="mt-4 flex flex-wrap justify-end gap-3">
-                    <button type="button" data-tool-encrypt class="rounded-full bg-[#6D5DFC] px-5 py-2.5 text-sm font-extrabold text-white shadow-[0_14px_34px_rgba(109,93,252,0.24)] transition hover:-translate-y-0.5 hover:bg-[#5B4BEB]">加密</button>
-                    <button type="button" data-tool-decrypt class="rounded-full border border-[#E3DFF7] bg-white px-5 py-2.5 text-sm font-extrabold text-[#201D35] shadow-[0_10px_28px_rgba(56,44,92,0.06)] transition hover:-translate-y-0.5 hover:border-[#CFC8FF] hover:text-[#6D5DFC]">解密</button>
-                    <button type="button" data-tool-clear class="rounded-full border border-[#E3DFF7] bg-[#F7F7FF] px-5 py-2.5 text-sm font-extrabold text-[#756F86] transition hover:border-[#CFC8FF] hover:text-[#6D5DFC]">清空</button>
-                  </div>
-                </div>
-
-                <div class="flex flex-col">
-                  <div class="mb-3 flex items-center justify-between">
-                    <h3 class="font-extrabold tracking-[-0.03em] text-[#17142A]">Tool Output Area</h3>
-                    <span data-output-state class="rounded-full bg-[#F7F7FF] px-3 py-1 text-xs font-extrabold text-[#8A849B]">Ready</span>
-                  </div>
-                  <pre data-tool-output class="min-h-[330px] flex-1 whitespace-pre-wrap break-words rounded-2xl border border-[#E8E5F8] bg-[#11101E] p-4 text-sm leading-6 text-white/78 shadow-inner">输出结果将在这里展示</pre>
-                </div>
-              </div>
-            </section>
+              </section>
+            ))}
           </div>
 
-          <section id="seo" class="mt-7 overflow-hidden rounded-[2rem] bg-[#11101E] p-8 text-white shadow-[0_30px_90px_rgba(21,19,38,0.22)] sm:p-10 lg:p-12">
-            <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#AFA7FF]">Footer info block</p>
-            <h2 class="max-w-2xl text-3xl font-extrabold tracking-[-0.055em] sm:text-5xl">更多站长工具分类正在建设中。</h2>
-            <p class="mt-5 max-w-xl text-sm leading-6 text-white/54">这里预留 SEO 说明、工具索引、更新日志与相关工具推荐模块。</p>
+          <section id="quick-workbench" class="mt-14 scroll-mt-24">
+            <ToolWorkspace hashMode={true} />
+          </section>
+
+          <section class="mt-10 rounded-[2rem] bg-[#11101E] p-8 text-white shadow-[0_30px_90px_rgba(21,19,38,0.22)] sm:p-10">
+            <h2 class="text-3xl font-extrabold tracking-[-0.055em]">Browser-first utility discovery</h2>
+            <div class="mt-5 grid gap-4 text-sm leading-6 text-white/64 md:grid-cols-3">
+              <p>FlowPilot tools run in the browser when possible.</p>
+              <p>Many tools do not require uploading data to a server.</p>
+              <p>Related tools are grouped for faster discovery.</p>
+            </div>
           </section>
         </div>
       </section>
+
+      <Footer />
     </div>
+
+    <ToolsPanel />
   </main>
-
-  <script>
-    import { toolsRegistry } from "../../../lib/tools/registry";
-    import { initToolsHub } from "../../scripts/tools-hub";
-
-    initToolsHub(toolsRegistry);
-
-    const toggleButton = document.querySelector(".mobile-menu-toggle");
-    const closeButton = document.querySelector(".mobile-menu-close");
-    const drawer = document.querySelector("#mobile-drawer");
-    const overlay = document.querySelector("#mobile-drawer-overlay");
-    const drawerLinks = document.querySelectorAll(".mobile-drawer-link");
-
-    const setDrawerOpen = (isOpen: boolean) => {
-      drawer?.classList.toggle("translate-x-full", !isOpen);
-      drawer?.classList.toggle("translate-x-0", isOpen);
-      drawer?.setAttribute("aria-hidden", String(!isOpen));
-
-      overlay?.classList.toggle("pointer-events-none", !isOpen);
-      overlay?.classList.toggle("opacity-0", !isOpen);
-      overlay?.classList.toggle("opacity-100", isOpen);
-
-      toggleButton?.setAttribute("aria-expanded", String(isOpen));
-      if (toggleButton) {
-        toggleButton.textContent = isOpen ? "×" : "☰";
-        toggleButton.setAttribute("aria-label", isOpen ? "Close mobile menu" : "Open mobile menu");
-      }
-    };
-
-    toggleButton?.addEventListener("click", () => {
-      const isOpen = toggleButton.getAttribute("aria-expanded") === "true";
-      setDrawerOpen(!isOpen);
-    });
-
-    closeButton?.addEventListener("click", () => setDrawerOpen(false));
-    overlay?.addEventListener("click", () => setDrawerOpen(false));
-    drawerLinks.forEach(link => link.addEventListener("click", () => setDrawerOpen(false)));
-  </script>
 </BaseLayout>

@@ -1,0 +1,12 @@
+---
+const enabled = import.meta.env.PUBLIC_ANALYTICS_ENABLED === "true";
+const provider = import.meta.env.PUBLIC_ANALYTICS_PROVIDER ?? "placeholder";
+---
+
+{enabled && (
+  <script
+    is:inline
+    data-analytics-provider={provider}
+    set:html={`console.info("FlowPilot analytics placeholder enabled for ${provider}. Configure a real provider before production tracking.");`}
+  />
+)}
