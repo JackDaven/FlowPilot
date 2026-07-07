@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import ToolsPanel from "../components/ToolsPanel.astro";
+import { absoluteUrl } from "../config/site";
+
+const title = "Privacy Policy | FlowPilot";
+const description = "Learn how FlowPilot handles browser-based tool inputs, analytics, and privacy for online utilities.";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "PrivacyPolicy",
+  name: "Privacy Policy",
+  url: absoluteUrl("/privacy"),
+  description
+};
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/privacy" jsonLd={jsonLd}>
+  <main class="relative min-h-screen overflow-hidden bg-[#F7F7FF] text-[#151326]">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div class="absolute left-1/2 top-[-24rem] h-[52rem] w-[72rem] -translate-x-1/2 rounded-full bg-[#8B7CFF]/16 blur-3xl"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(109,93,252,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(109,93,252,0.045)_1px,transparent_1px)] bg-[length:72px_72px]"></div>
+    </div>
+    <div class="relative z-10">
+      <Navbar />
+      <section class="px-5 py-16 sm:px-8 lg:px-10">
+        <div class="mx-auto max-w-4xl">
+          <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">Privacy</p>
+          <h1 class="text-4xl font-extrabold leading-tight tracking-[-0.055em] text-[#17142A] sm:text-6xl">Privacy Policy</h1>
+          <div class="mt-8 space-y-6 rounded-[2rem] border border-[#E8E5F8] bg-white/88 p-7 text-sm leading-7 text-[#756F86] shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+            <section>
+              <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">Browser-based tools</h2>
+              <p class="mt-3">Many FlowPilot tools run directly in your browser. For tools such as AES, Base64, JSON formatting, URL encoding, counters, and text conversion, user input is processed by client-side code whenever possible.</p>
+            </section>
+            <section>
+              <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">Accounts and input</h2>
+              <p class="mt-3">FlowPilot does not require an account to use the public tools. Tool input is not intentionally stored by the application as part of normal browser-based utility use.</p>
+            </section>
+            <section>
+              <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">Analytics</h2>
+              <p class="mt-3">Analytics are disabled by default in this codebase. If analytics are enabled later, they should be used for aggregate site traffic measurement and documented with the selected provider.</p>
+            </section>
+            <section>
+              <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">Third-party services</h2>
+              <p class="mt-3">FlowPilot should not load third-party analytics or tracking scripts unless they are explicitly configured. Review deployment settings and environment variables before launch.</p>
+            </section>
+            <a href="/tools" class="inline-flex rounded-full bg-[#6D5DFC] px-5 py-3 text-sm font-extrabold text-white shadow-[0_14px_34px_rgba(109,93,252,0.24)] transition hover:-translate-y-0.5 hover:bg-[#5B4BEB]">Browse tools</a>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </div>
+    <ToolsPanel />
+  </main>
+</BaseLayout>

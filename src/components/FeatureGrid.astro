@@ -1,0 +1,51 @@
+---
+const features = [
+  {
+    title: "AI Tool Curation",
+    desc: "Surface the right tools for content, growth, and operations without wasting time on endless browsing.",
+    class: "md:col-span-2 lg:col-span-2 lg:row-span-2"
+  },
+  {
+    title: "Workflow Templates",
+    desc: "Launch repeatable systems for campaigns, research, and execution with ready-to-use structures.",
+    class: ""
+  },
+  {
+    title: "Creator Ops",
+    desc: "Build a lightweight operating system that helps solo operators and small teams move faster.",
+    class: ""
+  },
+  {
+    title: "Smart Discovery",
+    desc: "Find modern tools by use case, goal, and stack compatibility across your daily workflows.",
+    class: "md:col-span-2"
+  }
+];
+---
+
+<section id="features" class="px-5 pb-20 pt-32 sm:px-8 lg:px-10 lg:pb-28 lg:pt-40">
+  <div class="mx-auto max-w-7xl">
+    <div class="mx-auto mb-14 max-w-3xl text-center">
+      <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">Why FlowPilot</p>
+      <h2 class="text-3xl font-extrabold tracking-[-0.055em] text-[#17142A] sm:text-5xl">Everything you need to discover, track, and scale.</h2>
+      <p class="mt-5 text-lg leading-8 text-[#756F86]">A calm, focused workspace for turning scattered tools into repeatable creator systems.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[230px]">
+      {features.map((f, index) => (
+        <div class:list={["group relative overflow-hidden rounded-2xl border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(109,93,252,0.16)]", f.class]}>
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(139,124,255,0.16),transparent_45%)] opacity-0 transition duration-300 group-hover:opacity-100"></div>
+          <div class="relative flex h-full flex-col justify-between">
+            <div>
+              <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6D5DFC] via-[#8B7CFF] to-[#A855F7] text-sm font-extrabold text-white shadow-[0_14px_32px_rgba(109,93,252,0.24)]">
+                0{index + 1}
+              </div>
+              <h3 class="text-xl font-extrabold tracking-[-0.03em] text-[#17142A]">{f.title}</h3>
+            </div>
+            <p class="mt-6 max-w-md text-sm leading-6 text-[#756F86]">{f.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

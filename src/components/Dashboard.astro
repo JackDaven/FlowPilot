@@ -1,0 +1,105 @@
+---
+const nav = ['Overview', 'Tools', 'Templates', 'Analytics', 'Settings'];
+const metrics = [
+  { value: '24.8K', label: 'Views', gradient: 'from-[#6D5DFC] to-[#8B7CFF]' },
+  { value: '8.4K', label: 'Saves', gradient: 'from-[#8B7CFF] to-[#A855F7]' },
+  { value: '3.1K', label: 'Clicks', gradient: 'from-[#A855F7] to-[#6D5DFC]' }
+];
+const tools = ['Midjourney', 'Notion AI', 'Runway', 'ChatGPT Plus'];
+---
+
+<section class="relative z-20 -mt-20 px-5 sm:px-8 lg:-mt-28 lg:px-10">
+  <div class="mx-auto max-w-6xl">
+    <div class="pointer-events-none absolute left-1/2 top-1/2 h-[28rem] w-[70rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#6D5DFC]/18 blur-[80px]"></div>
+
+    <div data-dashboard-preview class="relative rounded-[2.25rem] border border-white/10 bg-[#080812] p-2 shadow-[0_36px_120px_rgba(35,25,85,0.36),0_12px_40px_rgba(109,93,252,0.22)] transition duration-500 ease-out will-change-transform hover:-translate-y-3 hover:rotate-[0.35deg] hover:shadow-[0_46px_140px_rgba(35,25,85,0.42),0_18px_56px_rgba(109,93,252,0.28)]">
+      <div class="absolute -inset-px rounded-[2.25rem] bg-gradient-to-br from-white/20 via-[#8B7CFF]/10 to-[#A855F7]/25 opacity-70 transition duration-500 hover:opacity-100"></div>
+      <div class="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[#0B0B16]">
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_10%,rgba(139,124,255,0.26),transparent_34%),linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[length:100%_100%,56px_56px,56px_56px]"></div>
+
+        <div class="relative flex items-center justify-between border-b border-white/10 px-5 py-4 sm:px-6">
+          <div class="flex items-center gap-2">
+            <span class="h-3 w-3 rounded-full bg-[#FF6B6B]"></span>
+            <span class="h-3 w-3 rounded-full bg-[#FFD166]"></span>
+            <span class="h-3 w-3 rounded-full bg-[#4ADE80]"></span>
+          </div>
+          <div class="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/52 backdrop-blur-xl">FlowPilot OS</div>
+        </div>
+
+        <div class="relative grid min-h-[520px] lg:grid-cols-[220px_1fr]">
+          <aside class="hidden border-r border-white/10 bg-white/[0.035] p-6 lg:block">
+            <div class="mb-9 flex items-center gap-3 text-sm font-extrabold text-white">
+              <span class="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6D5DFC] to-[#A855F7] shadow-[0_14px_34px_rgba(109,93,252,0.38)]"></span>
+              Dashboard
+            </div>
+            <div class="space-y-2 text-sm font-semibold text-white/42">
+              {nav.map((item, index) => (
+                <div class:list={["rounded-xl px-3 py-2.5 transition", index === 0 ? "bg-white/[0.08] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]" : "hover:bg-white/[0.05] hover:text-white/70"]}>{item}</div>
+              ))}
+            </div>
+          </aside>
+
+          <div class="p-5 sm:p-7 lg:p-8">
+            <div class="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-[#AFA7FF]">Welcome back, Alex</p>
+                <h2 class="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-white sm:text-3xl">Your workflow command center</h2>
+              </div>
+              <div class="flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white/64 backdrop-blur-xl">
+                <span class="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,0.75)]"></span>
+                Live sync
+              </div>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-3">
+              {metrics.map(metric => (
+                <div class="rounded-2xl border border-white/10 bg-white/[0.065] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-xl">
+                  <p class="text-xs font-semibold text-white/42">{metric.label}</p>
+                  <p class="mt-2 text-3xl font-extrabold tracking-[-0.05em] text-white">{metric.value}</p>
+                  <div class="mt-5 flex h-10 items-end gap-1.5">
+                    <span class="h-[38%] flex-1 rounded-t bg-white/12"></span>
+                    <span class="h-[62%] flex-1 rounded-t bg-white/18"></span>
+                    <span class="h-[48%] flex-1 rounded-t bg-white/12"></span>
+                    <span class:list={["h-[82%] flex-1 rounded-t bg-gradient-to-t", metric.gradient]}></span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-5 grid gap-5 lg:grid-cols-[1.35fr_0.85fr]">
+              <div class="rounded-2xl border border-white/10 bg-white/[0.065] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-xl">
+                <div class="mb-5 flex items-center justify-between">
+                  <h3 class="font-extrabold tracking-[-0.03em] text-white">Top Performing Tools</h3>
+                  <span class="rounded-full bg-[#6D5DFC]/16 px-2.5 py-1 text-xs font-bold text-[#CFCBFF]">Live</span>
+                </div>
+                <div class="space-y-3">
+                  {tools.map((tool, index) => (
+                    <div class="flex items-center justify-between rounded-xl border border-white/8 bg-black/14 px-3 py-3 text-sm">
+                      <div class="flex items-center gap-3">
+                        <span class="h-8 w-8 rounded-xl bg-gradient-to-br from-[#6D5DFC]/90 to-[#A855F7]/80 shadow-[0_10px_24px_rgba(109,93,252,0.24)]"></span>
+                        <span class="font-bold text-white/88">{tool}</span>
+                      </div>
+                      <span class="font-bold text-emerald-200">+{(index + 2) * 8}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-white/10 bg-white/[0.065] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] backdrop-blur-xl">
+                <h3 class="font-extrabold tracking-[-0.03em] text-white">Traffic Source</h3>
+                <div class="mx-auto my-7 h-32 w-32 rounded-full bg-[conic-gradient(#6D5DFC_0_46%,#8B7CFF_46%_72%,#A855F7_72%_88%,rgba(255,255,255,0.12)_88%_100%)] p-4 shadow-[0_18px_50px_rgba(109,93,252,0.20)]">
+                  <div class="h-full w-full rounded-full bg-[#0B0B16]"></div>
+                </div>
+                <div class="space-y-2 text-sm text-white/56">
+                  <div class="flex justify-between"><span>Search</span><b class="text-white/86">46%</b></div>
+                  <div class="flex justify-between"><span>Social</span><b class="text-white/86">26%</b></div>
+                  <div class="flex justify-between"><span>Direct</span><b class="text-white/86">16%</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,118 @@
+---
+import { toolsRegistry, toolsById, getToolPath, type ToolDefinition } from "../../lib/tools/registry";
+
+type Props = {
+  activeTool?: ToolDefinition;
+  hashMode?: boolean;
+};
+
+const { activeTool = toolsRegistry[0], hashMode = false } = Astro.props;
+const defaultTool = toolsById[activeTool.id] ?? toolsRegistry[0];
+---
+
+<section
+  class="rounded-[2rem] border border-[#E8E5F8] bg-white/86 p-5 shadow-[0_24px_80px_rgba(79,65,130,0.10)] backdrop-blur-xl sm:p-7"
+  data-tools-workspace
+  data-initial-tool-id={defaultTool.id}
+  data-hash-mode={String(hashMode)}
+>
+  <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">Browser utility</p>
+      <h2 class="text-3xl font-extrabold tracking-[-0.055em] text-[#17142A] sm:text-4xl" data-tool-name>{defaultTool.name}</h2>
+      <p class="mt-4 max-w-2xl text-sm leading-6 text-[#756F86]" data-tool-intro>{defaultTool.intro}</p>
+    </div>
+    <span data-tool-status class="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.12em] text-emerald-600">
+      {defaultTool.status}
+    </span>
+  </div>
+
+  <div class="flex flex-wrap gap-2 border-t border-[#E8E5F8] pt-5" role="tablist" aria-label="Tool categories">
+    {toolsRegistry.map(tool => (
+      <a
+        href={getToolPath(tool)}
+        data-tool-tab={tool.id}
+        class="rounded-full border border-[#E8E5F8] bg-white px-4 py-2 text-sm font-extrabold text-[#756F86] transition hover:border-[#CFC8FF] hover:bg-[#F1EEFF] hover:text-[#6D5DFC]"
+        role="tab"
+      >
+        {tool.label}
+      </a>
+    ))}
+  </div>
+
+  <div class="mt-7 grid gap-7 lg:grid-cols-[0.82fr_1.18fr]">
+    <aside class="space-y-7">
+      <div class="rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+        <div class="space-y-5 text-sm leading-7 text-[#756F86]">
+          <div>
+            <p class="mb-1 font-extrabold text-[#17142A]">How it works</p>
+            <p data-tool-guide>{defaultTool.guide}</p>
+          </div>
+          <div>
+            <p class="mb-1 font-extrabold text-[#17142A]">Example</p>
+            <p class="font-semibold text-[#17142A]">Input</p>
+            <p class="break-words rounded-2xl bg-[#F7F7FF] px-4 py-3" data-tool-example-input>{defaultTool.example.input}</p>
+            <p class="mt-3 font-semibold text-[#17142A]">Output</p>
+            <p class="whitespace-pre-wrap break-words rounded-2xl bg-[#11101E] px-4 py-3 text-white/78" data-tool-example-output>{defaultTool.example.output}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+        <h3 class="mb-4 text-lg font-extrabold tracking-[-0.03em] text-[#17142A]">All tools</h3>
+        <div class="space-y-2">
+          {toolsRegistry.map(tool => (
+            <a
+              href={getToolPath(tool)}
+              data-tool-sidebar={tool.id}
+              class="flex items-center justify-between rounded-2xl border border-[#E8E5F8] bg-[#FBFAFF] px-4 py-3 text-sm transition hover:border-[#CFC8FF] hover:bg-[#F1EEFF]"
+            >
+              <span class="font-bold text-[#17142A]">{tool.label}</span>
+              <span class:list={["rounded-full px-2.5 py-1 text-xs font-extrabold uppercase tracking-[0.1em]", tool.status === "local" ? "bg-emerald-50 text-emerald-600" : "bg-[#F1EEFF] text-[#6D5DFC]"]}>{tool.status}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </aside>
+
+    <div class="rounded-[2rem] border border-[#E8E5F8] bg-white p-5 shadow-[0_24px_80px_rgba(79,65,130,0.10)] sm:p-6">
+      <div class="grid min-h-[520px] gap-5 lg:grid-cols-2">
+        <div class="flex flex-col">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <h3 class="font-extrabold tracking-[-0.03em] text-[#17142A]">Tool Input Area</h3>
+            <span data-active-tool-label class="rounded-full bg-[#F1EEFF] px-3 py-1 text-xs font-extrabold text-[#6D5DFC]">{defaultTool.label}</span>
+          </div>
+          <textarea data-tool-input aria-label={`${defaultTool.name} input`} class="min-h-[330px] flex-1 resize-none rounded-2xl border border-[#E8E5F8] bg-[#FBFAFF] p-4 text-sm leading-6 text-[#17142A] outline-none transition placeholder:text-[#B6B0C7] focus:border-[#8B7CFF] focus:ring-4 focus:ring-[#8B7CFF]/15" placeholder={defaultTool.placeholder ?? "Enter text to process"}></textarea>
+          <div data-tool-passphrase-wrap class="mt-4 hidden">
+            <label class="mb-2 block text-sm font-bold text-[#17142A]">AES Passphrase</label>
+            <input data-tool-passphrase type="password" class="w-full rounded-2xl border border-[#E8E5F8] bg-[#FBFAFF] px-4 py-3 text-sm text-[#17142A] outline-none transition placeholder:text-[#B6B0C7] focus:border-[#8B7CFF] focus:ring-4 focus:ring-[#8B7CFF]/15" placeholder="Enter encryption passphrase" />
+          </div>
+          <div class="mt-4 flex flex-wrap justify-end gap-3">
+            <button type="button" data-tool-encrypt class="rounded-full bg-[#6D5DFC] px-5 py-2.5 text-sm font-extrabold text-white shadow-[0_14px_34px_rgba(109,93,252,0.24)] transition hover:-translate-y-0.5 hover:bg-[#5B4BEB]">{defaultTool.actions.primary}</button>
+            <button type="button" data-tool-decrypt class:list={["rounded-full border border-[#E3DFF7] bg-white px-5 py-2.5 text-sm font-extrabold text-[#201D35] shadow-[0_10px_28px_rgba(56,44,92,0.06)] transition hover:-translate-y-0.5 hover:border-[#CFC8FF] hover:text-[#6D5DFC]", !defaultTool.actions.secondary && "hidden"]}>{defaultTool.actions.secondary}</button>
+            <button type="button" data-tool-clear class="rounded-full border border-[#E3DFF7] bg-[#F7F7FF] px-5 py-2.5 text-sm font-extrabold text-[#756F86] transition hover:border-[#CFC8FF] hover:text-[#6D5DFC]">Clear</button>
+          </div>
+        </div>
+
+        <div class="flex flex-col">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <h3 class="font-extrabold tracking-[-0.03em] text-[#17142A]">Tool Output Area</h3>
+            <span data-output-state class="rounded-full bg-[#F7F7FF] px-3 py-1 text-xs font-extrabold text-[#8A849B]">Ready</span>
+          </div>
+          <pre data-tool-output role="status" aria-live="polite" aria-label={`${defaultTool.name} output`} class="min-h-[330px] flex-1 whitespace-pre-wrap break-words rounded-2xl border border-[#E8E5F8] bg-[#11101E] p-4 text-sm leading-6 text-white/78 shadow-inner">Output will appear here</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { toolsRegistry } from "../../lib/tools/registry";
+  import { initToolsHub } from "../scripts/tools-hub";
+
+  const workspace = document.querySelector<HTMLElement>("[data-tools-workspace]");
+  initToolsHub(toolsRegistry, {
+    initialToolId: workspace?.dataset.initialToolId,
+    hashMode: workspace?.dataset.hashMode === "true"
+  });
+</script>

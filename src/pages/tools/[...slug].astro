@@ -1,0 +1,270 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+import ToolWorkspace from "../../components/ToolWorkspace.astro";
+import ToolsPanel from "../../components/ToolsPanel.astro";
+import {
+  categoriesBySlug,
+  getCategoryPath,
+  getRelatedTools,
+  getToolPath,
+  toolCategories,
+  toolsRegistry,
+  type ToolCategoryDefinition,
+  type ToolDefinition
+} from "../../../lib/tools/registry";
+import { absoluteUrl } from "../../config/site";
+
+type CategoryPage = ToolCategoryDefinition & { tools: ToolDefinition[] };
+type PageProps =
+  | { kind: "tool"; tool: ToolDefinition }
+  | { kind: "category"; category: CategoryPage };
+
+export const getStaticPaths = () => [
+  ...toolCategories.map((category) => ({
+    params: { slug: category.slug },
+    props: { kind: "category", category }
+  })),
+  ...toolsRegistry.map((tool) => ({
+    params: { slug: tool.slug },
+    props: { kind: "tool", tool }
+  }))
+];
+
+const props = Astro.props as PageProps;
+const isCategory = props.kind === "category";
+const category = isCategory ? props.category : undefined;
+const tool = props.kind === "tool" ? props.tool : undefined;
+
+const pageTitle = isCategory ? category!.seoTitle : tool!.seoTitle;
+const pageDescription = isCategory ? category!.seoDescription : tool!.seoDescription;
+const canonicalPath = isCategory ? getCategoryPath(category!) : getToolPath(tool!);
+const pageUrl = absoluteUrl(canonicalPath);
+
+const jsonLd = isCategory
+  ? [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: category!.name,
+        url: pageUrl,
+        description: category!.seoDescription
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        itemListElement: category!.tools.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.name,
+          url: absoluteUrl(getToolPath(item))
+        }))
+      }
+    ]
+  : [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 2, name: "Tools", item: absoluteUrl("/tools") },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: categoriesBySlug[tool!.categorySlug]?.name ?? tool!.category,
+            item: absoluteUrl(getCategoryPath(tool!.categorySlug))
+          },
+          { "@type": "ListItem", position: 4, name: tool!.name, item: pageUrl }
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        name: tool!.name,
+        applicationCategory: "UtilitiesApplication",
+        operatingSystem: "Any",
+        url: pageUrl,
+        description: tool!.seoDescription,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: tool!.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer }
+        }))
+      }
+    ];
+
+const relatedTools = tool ? getRelatedTools(tool) : [];
+const siblingCategories = toolCategories.filter((item) => item.slug !== category?.slug).slice(0, 5);
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} canonicalPath={canonicalPath} ogType={isCategory ? "website" : "article"} jsonLd={jsonLd}>
+  <main class="relative min-h-screen overflow-hidden bg-[#F7F7FF] text-[#151326]">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div class="absolute left-1/2 top-[-24rem] h-[52rem] w-[72rem] -translate-x-1/2 rounded-full bg-[#8B7CFF]/20 blur-3xl"></div>
+      <div class="absolute right-[-18rem] top-32 h-[38rem] w-[38rem] rounded-full bg-[#A855F7]/16 blur-[120px]"></div>
+      <div class="absolute left-[-18rem] top-[38rem] h-[34rem] w-[34rem] rounded-full bg-[#6D5DFC]/12 blur-[120px]"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(109,93,252,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(109,93,252,0.045)_1px,transparent_1px)] bg-[length:72px_72px]"></div>
+    </div>
+
+    <div class="relative z-10">
+      <Navbar />
+
+      <section class="px-5 pb-16 pt-10 sm:px-8 lg:px-10">
+        <div class="mx-auto max-w-7xl">
+          <nav class="mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-[#E8E5F8] bg-white/82 px-4 py-3 text-sm text-[#756F86] shadow-[0_12px_34px_rgba(79,65,130,0.06)] backdrop-blur-xl" aria-label="Breadcrumb">
+            <a href="/" class="font-bold text-[#6D5DFC] hover:text-[#5B4BEB]">Home</a>
+            <span>&gt;</span>
+            <a href="/tools" class="font-bold text-[#6D5DFC] hover:text-[#5B4BEB]">Tools</a>
+            <span>&gt;</span>
+            {isCategory ? (
+              <span class="font-bold text-[#17142A]">{category!.name}</span>
+            ) : (
+              <>
+                <a href={getCategoryPath(tool!.categorySlug)} class="font-bold text-[#6D5DFC] hover:text-[#5B4BEB]">{categoriesBySlug[tool!.categorySlug]?.name ?? tool!.category}</a>
+                <span>&gt;</span>
+                <span data-breadcrumb-current class="font-bold text-[#17142A]">{tool!.name}</span>
+              </>
+            )}
+          </nav>
+
+          {isCategory ? (
+            <>
+              <div class="grid gap-8 lg:grid-cols-[1fr_0.38fr] lg:items-end">
+                <div>
+                  <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">Tool category</p>
+                  <h1 class="max-w-4xl text-4xl font-extrabold leading-tight tracking-[-0.055em] text-[#17142A] sm:text-6xl">{category!.h1}</h1>
+                  <p class="mt-5 max-w-2xl text-base leading-7 text-[#756F86] sm:text-lg">{category!.intro}</p>
+                </div>
+                <div class="rounded-[2rem] border border-[#E8E5F8] bg-white/86 p-5 text-sm leading-6 text-[#756F86] shadow-[0_18px_50px_rgba(79,65,130,0.08)] backdrop-blur-xl">
+                  <p class="font-extrabold text-[#17142A]">{category!.tools.length} tools in this category</p>
+                  <p class="mt-2">Browse the dedicated tool pages below, or return to the full FlowPilot tools directory.</p>
+                  <a href="/tools" class="mt-4 inline-flex rounded-full border border-[#E3DFF7] bg-white px-4 py-2 text-sm font-extrabold text-[#201D35] transition hover:border-[#CFC8FF] hover:text-[#6D5DFC]">All tools</a>
+                </div>
+              </div>
+
+              <div class="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {category!.tools.map(item => (
+                  <a href={getToolPath(item)} class="group rounded-[2rem] border border-[#E8E5F8] bg-white/88 p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#CFC8FF] hover:shadow-[0_24px_70px_rgba(109,93,252,0.14)]">
+                    <span class="mb-4 inline-flex rounded-full bg-[#F1EEFF] px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-[#6D5DFC]">{item.label}</span>
+                    <h2 class="text-xl font-extrabold tracking-[-0.035em] text-[#17142A] group-hover:text-[#6D5DFC]">{item.name}</h2>
+                    <p class="mt-3 text-sm leading-6 text-[#756F86]">{item.intro}</p>
+                    <span class="mt-5 inline-flex text-sm font-extrabold text-[#6D5DFC]">Open tool page</span>
+                  </a>
+                ))}
+              </div>
+
+              <section class="mt-10 rounded-[2rem] bg-[#11101E] p-8 text-white shadow-[0_30px_90px_rgba(21,19,38,0.22)] sm:p-10">
+                <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#AFA7FF]">Related categories</p>
+                <h2 class="text-3xl font-extrabold tracking-[-0.055em]">Explore more FlowPilot tools</h2>
+                <div class="mt-6 grid gap-4 md:grid-cols-3">
+                  {siblingCategories.map(item => (
+                    <a href={getCategoryPath(item)} class="rounded-2xl border border-white/10 bg-white/6 p-5 transition hover:-translate-y-1 hover:bg-white/10">
+                      <h3 class="font-extrabold tracking-[-0.03em]">{item.name}</h3>
+                      <p class="mt-2 text-sm leading-6 text-white/58">{item.intro}</p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            </>
+          ) : (
+            <>
+              <div class="mb-8 grid gap-8 lg:grid-cols-[1fr_0.38fr] lg:items-end">
+                <div>
+                  <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">{tool!.category}</p>
+                  <h1 class="max-w-4xl text-4xl font-extrabold leading-tight tracking-[-0.055em] text-[#17142A] sm:text-6xl">{tool!.h1}</h1>
+                  <p class="mt-5 max-w-2xl text-base leading-7 text-[#756F86] sm:text-lg">{tool!.longDescription}</p>
+                </div>
+                <div class="rounded-[2rem] border border-[#E8E5F8] bg-white/86 p-5 text-sm leading-6 text-[#756F86] shadow-[0_18px_50px_rgba(79,65,130,0.08)] backdrop-blur-xl">
+                  <p class="font-extrabold text-[#17142A]">Dedicated SEO page</p>
+                  <p class="mt-2">This tool has its own URL, title, description, FAQ content, and related internal links.</p>
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    <a href="/tools" class="inline-flex rounded-full border border-[#E3DFF7] bg-white px-4 py-2 text-sm font-extrabold text-[#201D35] transition hover:border-[#CFC8FF] hover:text-[#6D5DFC]">Directory</a>
+                    <a href={getCategoryPath(tool!.categorySlug)} class="inline-flex rounded-full bg-[#6D5DFC] px-4 py-2 text-sm font-extrabold text-white transition hover:bg-[#5B4BEB]">Category</a>
+                  </div>
+                </div>
+              </div>
+
+              <ToolWorkspace activeTool={tool!} />
+
+              <div class="mt-10 grid gap-7 lg:grid-cols-3">
+                <section class="rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+                  <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">How to use</h2>
+                  <ol class="mt-5 space-y-3 text-sm leading-6 text-[#756F86]">
+                    {tool!.steps.map((step, index) => (
+                      <li class="flex gap-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F1EEFF] text-xs font-extrabold text-[#6D5DFC]">{index + 1}</span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+
+                <section class="rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+                  <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">Example</h2>
+                  <div class="mt-5 space-y-4 text-sm leading-6">
+                    <div>
+                      <p class="mb-2 font-extrabold text-[#17142A]">Input</p>
+                      <pre class="whitespace-pre-wrap break-words rounded-2xl bg-[#F7F7FF] p-4 text-[#756F86]">{tool!.example.input}</pre>
+                    </div>
+                    <div>
+                      <p class="mb-2 font-extrabold text-[#17142A]">Output</p>
+                      <pre class="whitespace-pre-wrap break-words rounded-2xl bg-[#11101E] p-4 text-white/78">{tool!.example.output}</pre>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+                  <h2 class="text-2xl font-extrabold tracking-[-0.04em] text-[#17142A]">Common use cases</h2>
+                  <ul class="mt-5 space-y-3 text-sm leading-6 text-[#756F86]">
+                    {tool!.useCases.map((useCase) => <li class="rounded-2xl bg-[#F7F7FF] px-4 py-3">{useCase}</li>)}
+                  </ul>
+                </section>
+              </div>
+
+              <section class="mt-10 rounded-[2rem] border border-[#E8E5F8] bg-white p-6 shadow-[0_18px_50px_rgba(79,65,130,0.08)] sm:p-8">
+                <h2 class="text-3xl font-extrabold tracking-[-0.055em] text-[#17142A]">FAQ</h2>
+                <div class="mt-6 grid gap-4 md:grid-cols-3">
+                  {tool!.faqs.map(faq => (
+                    <article class="rounded-2xl border border-[#E8E5F8] bg-[#FBFAFF] p-5">
+                      <h3 class="font-extrabold tracking-[-0.03em] text-[#17142A]">{faq.question}</h3>
+                      <p class="mt-3 text-sm leading-6 text-[#756F86]">{faq.answer}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section class="mt-10 rounded-[2rem] bg-[#11101E] p-8 text-white shadow-[0_30px_90px_rgba(21,19,38,0.22)] sm:p-10">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#AFA7FF]">Related tools</p>
+                    <h2 class="text-3xl font-extrabold tracking-[-0.055em]">Keep working in FlowPilot</h2>
+                  </div>
+                  <a href={getCategoryPath(tool!.categorySlug)} class="text-sm font-extrabold text-[#AFA7FF] transition hover:text-white">View category</a>
+                </div>
+                <div class="mt-6 grid gap-4 md:grid-cols-3">
+                  {relatedTools.map(related => (
+                    <a href={getToolPath(related)} class="rounded-2xl border border-white/10 bg-white/6 p-5 transition hover:-translate-y-1 hover:bg-white/10">
+                      <span class="text-xs font-extrabold uppercase tracking-[0.14em] text-[#AFA7FF]">{related.category}</span>
+                      <h3 class="mt-3 font-extrabold tracking-[-0.03em]">{related.name}</h3>
+                      <p class="mt-2 text-sm leading-6 text-white/58">{related.intro}</p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+
+    <ToolsPanel />
+  </main>
+</BaseLayout>

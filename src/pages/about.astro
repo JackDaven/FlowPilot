@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import ToolsPanel from "../components/ToolsPanel.astro";
+import { getCategoryPath, toolCategories } from "../../lib/tools/registry";
+import { absoluteUrl } from "../config/site";
+
+const title = "About FlowPilot | Free Browser-Based Online Tools";
+const description = "Learn about FlowPilot, a collection of free browser-based tools for developers, creators, and marketers.";
+const linkedCategories = toolCategories.filter((category) => ["hash", "encoding", "developer", "text"].includes(category.slug));
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: "About FlowPilot",
+  url: absoluteUrl("/about"),
+  description
+};
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/about" jsonLd={jsonLd}>
+  <main class="relative min-h-screen overflow-hidden bg-[#F7F7FF] text-[#151326]">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div class="absolute left-1/2 top-[-24rem] h-[52rem] w-[72rem] -translate-x-1/2 rounded-full bg-[#8B7CFF]/16 blur-3xl"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(109,93,252,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(109,93,252,0.045)_1px,transparent_1px)] bg-[length:72px_72px]"></div>
+    </div>
+    <div class="relative z-10">
+      <Navbar />
+      <section class="px-5 py-16 sm:px-8 lg:px-10">
+        <div class="mx-auto max-w-5xl">
+          <p class="mb-3 text-sm font-extrabold uppercase tracking-[0.16em] text-[#6D5DFC]">About</p>
+          <h1 class="max-w-4xl text-4xl font-extrabold leading-tight tracking-[-0.055em] text-[#17142A] sm:text-6xl">About FlowPilot</h1>
+          <div class="mt-8 grid gap-6 text-sm leading-7 text-[#756F86] lg:grid-cols-[1fr_0.75fr]">
+            <div class="rounded-[2rem] border border-[#E8E5F8] bg-white/88 p-7 shadow-[0_18px_50px_rgba(79,65,130,0.08)]">
+              <p>FlowPilot is a collection of free browser-based online tools for creators, developers, and marketers. It helps with common tasks such as hashing, encoding, JSON formatting, text cleanup, timestamps, UUIDs, and other workflow checks.</p>
+              <p class="mt-5">The tools are designed to be simple, fast, and available without an account. Whenever possible, utility logic runs locally in the browser so you can complete quick conversions and checks without building a custom script.</p>
+              <p class="mt-5">FlowPilot focuses on practical utility pages with clear titles, descriptions, examples, FAQs, and internal links so both users and search engines can understand what each tool does.</p>
+            </div>
+            <aside class="rounded-[2rem] bg-[#11101E] p-7 text-white shadow-[0_30px_90px_rgba(21,19,38,0.22)]">
+              <h2 class="text-2xl font-extrabold tracking-[-0.04em]">Explore tools</h2>
+              <a href="/tools" class="mt-5 inline-flex rounded-full bg-white px-5 py-3 text-sm font-extrabold text-[#151326] transition hover:bg-[#F1EEFF]">Tools directory</a>
+              <div class="mt-6 space-y-3 text-sm text-white/62">
+                {linkedCategories.map(category => <a href={getCategoryPath(category)} class="block transition hover:text-white">{category.name}</a>)}
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </div>
+    <ToolsPanel />
+  </main>
+</BaseLayout>

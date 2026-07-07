@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
+import Dashboard from "../components/Dashboard.astro";
+import FeatureGrid from "../components/FeatureGrid.astro";
+import Steps from "../components/Steps.astro";
+import FAQ from "../components/FAQ.astro";
+import Footer from "../components/Footer.astro";
+import ToolsPanel from "../components/ToolsPanel.astro";
+import { absoluteUrl, siteConfig } from "../config/site";
+
+const title = "FlowPilot - Free Online Tools for Creators and Developers";
+const description =
+  "FlowPilot provides free browser-based tools for hashing, encoding, encryption, JSON formatting, URL conversion, and creator workflows.";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteConfig.name,
+  url: absoluteUrl("/"),
+  description: siteConfig.description
+};
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/" jsonLd={jsonLd}>
+  <main class="relative min-h-screen overflow-hidden bg-[#F7F7FF] text-[#151326]">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div class="absolute left-1/2 top-[-24rem] h-[52rem] w-[72rem] -translate-x-1/2 rounded-full bg-[#8B7CFF]/20 blur-3xl"></div>
+      <div class="absolute right-[-18rem] top-32 h-[38rem] w-[38rem] rounded-full bg-[#A855F7]/16 blur-[120px]"></div>
+      <div class="absolute left-[-18rem] top-[46rem] h-[34rem] w-[34rem] rounded-full bg-[#6D5DFC]/12 blur-[120px]"></div>
+      <div class="absolute bottom-24 right-[-16rem] h-[32rem] w-[32rem] rounded-full bg-[#8B7CFF]/10 blur-[120px]"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(109,93,252,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(109,93,252,0.045)_1px,transparent_1px)] bg-[length:72px_72px]"></div>
+    </div>
+
+    <div class="relative z-10">
+      <Navbar />
+      <Hero />
+      <Dashboard />
+
+      <div class="relative z-10 bg-gradient-to-b from-transparent via-[#F7F7FF] to-[#F7F7FF]">
+        <FeatureGrid />
+        <Steps />
+        <FAQ />
+        <Footer />
+      </div>
+    </div>
+
+    <ToolsPanel />
+  </main>
+</BaseLayout>
